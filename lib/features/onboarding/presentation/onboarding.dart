@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../authentification/login_screen.dart';
+
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
@@ -16,18 +18,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'title': 'Votre copilote marketing',
       'description': 'Il transforme la donnée en opportunités de croissance.',
+      'image': 'assets/images/illus 1.png',
     },
     {
       'title': 'Comprenez votre marché',
       'description': 'Il analyse les tendances, votre audience et vos performances en temps réel pour prendre des décisions éclairées.',
+      'image': 'assets/images/illus 2.png',
     },
     {
       'title': 'Simulez. Optimisez',
       'description': 'Il analyse et teste différents scénarios pour optimiser vos budgets et investissez là où l’impact sera le plus fort.',
+      'image': 'assets/images/illus 3.png',
     },
     {
       'title': 'Passez à l’action partout',
       'description': 'Gérez vos missions sur le terrain, suivez et remontez des données clés où que vous soyez.',
+      'image': 'assets/images/illus 4.png',
     },
   ];
 
@@ -58,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF173F27),
+      backgroundColor: const Color(0xFF1BB14A),
 
       body: SafeArea(
         child: Column(
@@ -78,7 +84,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   },
                   child: const Text(
                     'Passer',
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(color: Color(0xFFFFFFFF)),
                   ),
                 ),
               ),
@@ -105,22 +111,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                       children: [
                         // Illustration temporaire
-                        Container(
-                          width: 230,
-                          height: 230,
+                        SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              // Image PNG des cercles en arrière-plan
+                              Image.asset(
+                                'assets/images/cercles.png',
+                                width: 280,
+                                height: 280,
+                                fit: BoxFit.contain,
+                              ),
 
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF267A47),
-                            shape: BoxShape.circle,
-                          ),
-
-                          child: const Icon(
-                            Icons.insights,
-                            size: 100,
-                            color: Colors.white,
+                              // Illustration au-dessus
+                              Image.asset(
+                                onboardingData[index]['image']!,
+                                width: 250,
+                                height: 250,
+                                fit: BoxFit.contain,
+                              ),
+                            ],
                           ),
                         ),
-
                         const SizedBox(height: 50),
 
                         // Titre
@@ -130,24 +144,21 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 22,
+                            fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-
-                        const SizedBox(height: 12),
-
-                        // Description
                         Text(
                           onboardingData[index]['description']!,
                           textAlign: TextAlign.center,
 
                           style: const TextStyle(
-                            color: Colors.white70,
-                            fontSize: 14,
-                            height: 1.4,
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
                           ),
                         ),
+                        const SizedBox(height: 12),
                       ],
                     ),
                   );
@@ -206,7 +217,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   _currentPage == onboardingData.length - 1
                       ? ElevatedButton(
                           onPressed: () {
-                            // Aller vers Login plus tard
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const LoginScreen(),
+                              ),
+                            );
                           },
 
                           style: ElevatedButton.styleFrom(
