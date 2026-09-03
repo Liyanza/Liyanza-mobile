@@ -64,7 +64,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF1BB14A),
+      backgroundColor: const Color(0xFF19612b),
 
       body: SafeArea(
         child: Column(
@@ -110,7 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
 
                       children: [
-                        // Illustration temporaire
+                        // Illustration
                         SizedBox(
                           width: 300,
                           height: 300,

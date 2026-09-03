@@ -36,9 +36,24 @@ class _SplashScreenState extends State<SplashScreen> {
             children: [
               const Spacer(),
 
-              // Logo
-              Image.asset('assets/images/Logo_kiyanza.png', width: 180),
+              SizedBox(
+                width: 300,
+                height: 300,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Image.asset('assets/images/logo_tour.png', width: 300),
 
+                    Transform.translate(
+                      offset: const Offset(15, 0),
+                      child: Image.asset(
+                        'assets/images/Logo_kiyanza.png',
+                        width: 180,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               const SizedBox(height: 40),
 
               // Titre
