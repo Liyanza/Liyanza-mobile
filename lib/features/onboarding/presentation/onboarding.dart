@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../authentification/login_screen.dart';
+import '../../../core/theme/kiyanza_colors.dart';
+import '../../../core/theme/kiyanza_sizes.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -64,7 +66,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF19612b),
+      backgroundColor: AppColors.success700,
 
       body: SafeArea(
         child: Column(
