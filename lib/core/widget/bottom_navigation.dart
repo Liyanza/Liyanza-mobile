@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/kiyanza_colors.dart';
 import '../theme/kiyanza_sizes.dart';
+import '../../features/menu/menu.dart';
 
 class KiyanzaBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -102,11 +103,28 @@ class KiyanzaBottomNavigation extends StatelessWidget {
                     ),
                   ],
                 ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
 
-                child: const Icon(
-                  Icons.grid_view_rounded,
-                  color: AppColors.white,
-                  size: 24,
+                  constraints: const BoxConstraints(
+                    minWidth: 36,
+                    minHeight: 36,
+                  ),
+
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MenuScreen(),
+                      ),
+                    );
+                  },
+
+                  icon: const Icon(
+                    Icons.grid_view_rounded,
+                    color: AppColors.white,
+                    size: 24,
+                  ),
                 ),
               ),
             ),

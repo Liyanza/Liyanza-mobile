@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
 import '../../../core/widget/bottom_navigation.dart';
+import '../notification/notification.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -152,11 +153,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: AppColors.gray100,
                     shape: BoxShape.circle,
                   ),
+                  child: IconButton(
+                    padding: EdgeInsets.zero,
 
-                  child: const Icon(
-                    Icons.notifications_none_outlined,
-                    size: 21,
-                    color: AppColors.gray600,
+                    constraints: const BoxConstraints(
+                      minWidth: 36,
+                      minHeight: 36,
+                    ),
+
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotificationsScreen(),
+                        ),
+                      );
+                    },
+
+                    icon: const Icon(
+                      Icons.notifications_none_outlined,
+                      size: 21,
+                      color: AppColors.gray600,
+                    ),
                   ),
                 ),
 
