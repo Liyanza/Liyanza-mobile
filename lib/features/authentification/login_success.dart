@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/kiyanza_colors.dart';
+import '../../core/theme/kiyanza_sizes.dart';
+import '../home/home.dart';
+
 class LoginSuccessScreen extends StatelessWidget {
   const LoginSuccessScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: AppColors.white,
 
       body: SafeArea(
         child: Center(
@@ -22,14 +26,14 @@ class LoginSuccessScreen extends StatelessWidget {
                   height: 120,
 
                   decoration: const BoxDecoration(
-                    color: const Color(0xFF1BB14A),
+                    color: AppColors.green,
                     shape: BoxShape.circle,
                   ),
 
                   child: const Icon(
                     Icons.check,
                     size: 70,
-                    color: Color(0xFFFFFFFF),
+                    color: AppColors.white,
                   ),
                 ),
 
@@ -62,12 +66,17 @@ class LoginSuccessScreen extends StatelessWidget {
 
                   child: ElevatedButton(
                     onPressed: () {
-                      // Plus tard → Dashboard
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                      );
                     },
 
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1BB14A),
-                      foregroundColor: const Color(0xFFFFFFFF),
+                      backgroundColor: AppColors.green,
+                      foregroundColor: AppColors.white,
 
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -77,7 +86,7 @@ class LoginSuccessScreen extends StatelessWidget {
                     child: const Text(
                       'Continuer',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: AppSizes.text16,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

@@ -7,6 +7,8 @@ class AppSizes {
   static const double text20 = 20;
   static const double text24 = 24;
   static const double text28 = 28;
+  static const double text30 = 30;
+  static const double text11 = 11;
 
   // Espacements
   static const double space4 = 4;
