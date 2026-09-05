@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
+import 'nouvellecampagne.dart';
 
 class CampaignsScreen extends StatefulWidget {
   const CampaignsScreen({super.key});
@@ -445,7 +446,12 @@ class _CampaignsScreenState extends State<CampaignsScreen> {
 
         child: ElevatedButton(
           onPressed: () {
-            // TODO: navigation vers la création de campagne
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NewCampaignScreen(),
+              ),
+            );
           },
 
           style: ElevatedButton.styleFrom(
