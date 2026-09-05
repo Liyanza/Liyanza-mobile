@@ -4,6 +4,7 @@ import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
 import '../../../core/widget/bottom_navigation.dart';
 import '../notification/notification.dart';
+import '../../campagnes/campagne.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -629,9 +630,26 @@ class _HomeScreenState extends State<HomeScreen> {
     return Row(
       children: [
         Expanded(
-          child: _buildQuickAction(
-            icon: Icons.flag_outlined,
-            title: 'Campagnes',
+          child: IconButton(
+            padding: EdgeInsets.zero,
+
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const CampaignsScreen(),
+                ),
+              );
+            },
+
+            icon: const Icon(
+              Icons.flag_outlined,
+              color: AppColors.green,
+              size: 24,
+            ),
+
             color: AppColors.green,
           ),
         ),
