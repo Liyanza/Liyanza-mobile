@@ -42,11 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 stops: [0.35, 0.68, 1.0],
-                colors: [
-                  Color(0xFF1BB14A),
-                  Color(0xFF137E35),
-                  Color(0xFF0B4B1F),
-                ],
+                colors: [AppColors.green, Color(0xFF137E35), Color(0xFF0B4B1F)],
               ),
             ),
           ),
@@ -93,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         Text(
                           'Content de vous revoir !',
                           style: TextStyle(
-                            fontSize: 24,
+                            fontSize: AppSizes.text24,
                             fontWeight: FontWeight.bold,
                             color: Colors.white,
                           ),

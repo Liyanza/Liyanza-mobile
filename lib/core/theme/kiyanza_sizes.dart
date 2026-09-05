@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 class AppSizes {
   // Tailles de texte
   static const double text10 = 10;
