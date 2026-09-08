@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
 import 'campaign_objective_screen.dart';
+import '../monitoring/radio_station_screen.dart';
 
 class CampaignTypeScreen extends StatelessWidget {
   const CampaignTypeScreen({super.key});
@@ -16,16 +17,20 @@ class CampaignTypeScreen extends StatelessWidget {
       icon: Icons.desktop_windows_outlined,
       title: 'Campagne Digitale',
       description: 'Facebook, Instagram, Google Ads & Email',
+      destinationBuilder: (context) => const CampaignObjectiveScreen(),
     ),
     _CampaignTypeOption(
       icon: Icons.radio_outlined,
       title: 'Campagne Radio',
       description: 'Diffusion sur les radios locales et nationales',
+      destinationBuilder: (context) => const RadioStationScreen(),
     ),
     _CampaignTypeOption(
       icon: Icons.desktop_windows_outlined,
       title: 'Supports Publicitaires',
       description: 'Affiches, bâches, roll-ups, street marketing',
+      // TODO: pas encore maquetté dans Figma — brancher l'écran une fois prêt
+      destinationBuilder: (context) => const CampaignObjectiveScreen(),
     ),
   ];
 
@@ -46,7 +51,6 @@ class CampaignTypeScreen extends StatelessWidget {
             // =================================================
             // CONTENU
             // =================================================
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
@@ -143,7 +147,7 @@ class CampaignTypeScreen extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const CampaignObjectiveScreen()),
+          MaterialPageRoute(builder: type.destinationBuilder),
         );
       },
 
@@ -210,11 +214,7 @@ class CampaignTypeScreen extends StatelessWidget {
               ),
             ),
 
-            const Icon(
-              Icons.chevron_right,
-              size: 14,
-              color: AppColors.gray400,
-            ),
+            const Icon(Icons.chevron_right, size: 14, color: AppColors.gray400),
           ],
         ),
       ),
@@ -281,10 +281,12 @@ class _CampaignTypeOption {
   final IconData icon;
   final String title;
   final String description;
+  final WidgetBuilder destinationBuilder;
 
   _CampaignTypeOption({
     required this.icon,
     required this.title,
     required this.description,
+    required this.destinationBuilder,
   });
 }

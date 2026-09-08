@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
+import 'budget_screen.dart';
 import 'campaign_step_dots.dart';
 
 class CampaignAudienceScreen extends StatefulWidget {
   const CampaignAudienceScreen({super.key});
 
   @override
-  State<CampaignAudienceScreen> createState() =>
-      _CampaignAudienceScreenState();
+  State<CampaignAudienceScreen> createState() => _CampaignAudienceScreenState();
 }
 
 class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
@@ -46,13 +46,11 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
             // =================================================
             // STEP DOTS
             // =================================================
-
             const CampaignStepDots(currentStep: 2),
 
             // =================================================
             // CONTENU
             // =================================================
-
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
@@ -94,7 +92,6 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
             // =================================================
             // BOUTON CONTINUER
             // =================================================
-
             _buildContinueButton(context),
           ],
         ),
@@ -221,7 +218,10 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
                 Text(
                   value,
 
-                  style: const TextStyle(fontSize: 13, color: AppColors.gray400),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    color: AppColors.gray400,
+                  ),
                 ),
 
                 const SizedBox(width: 6),
@@ -366,7 +366,10 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
 
         child: ElevatedButton(
           onPressed: () {
-            // TODO: navigation vers l'étape suivante (budget / récapitulatif)
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const BudgetScreen()),
+            );
           },
 
           style: ElevatedButton.styleFrom(
