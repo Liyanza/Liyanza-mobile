@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
+import '../monitoring_radio/monitoring_campagne.dart';
 
 class RadioSuccessScreen extends StatelessWidget {
   const RadioSuccessScreen({super.key});
@@ -272,8 +273,12 @@ class RadioSuccessScreen extends StatelessWidget {
 
             child: ElevatedButton(
               onPressed: () {
-                // TODO: naviguer vers l'écran de monitoring de la campagne
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MonitoringCampaignScreen(),
+                  ),
+                );
               },
 
               style: ElevatedButton.styleFrom(
@@ -306,8 +311,12 @@ class RadioSuccessScreen extends StatelessWidget {
 
             child: ElevatedButton(
               onPressed: () {
-                // TODO: naviguer vers le détail de la campagne créée
-                Navigator.popUntil(context, (route) => route.isFirst);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const MonitoringCampaignScreen(),
+                  ),
+                );
               },
 
               style: ElevatedButton.styleFrom(

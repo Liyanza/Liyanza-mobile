@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
+import 'simulation_result.dart';
 
 class SimulationScreen extends StatefulWidget {
   const SimulationScreen({super.key});
@@ -25,15 +26,19 @@ class _SimulationScreenState extends State<SimulationScreen> {
   }
 
   void _startSimulation() {
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
       setState(() {
         if (_progress < 100) {
           _progress += 1;
         } else {
           _timer?.cancel();
 
-          // Plus tard :
-          // Navigation vers l'écran de résultat
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SimulationResultsScreen(),
+            ),
+          );
         }
       });
     });
