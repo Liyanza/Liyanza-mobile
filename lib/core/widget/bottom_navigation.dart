@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../theme/kiyanza_colors.dart';
 import '../theme/kiyanza_sizes.dart';
-import '../../features/menu/menu.dart';
 
 class KiyanzaBottomNavigation extends StatelessWidget {
   final int currentIndex;
@@ -18,9 +17,11 @@ class KiyanzaBottomNavigation extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       height: 72,
+
       child: Stack(
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
+
         children: [
           // =====================================================
           // BARRE BLANCHE
@@ -31,16 +32,17 @@ class KiyanzaBottomNavigation extends StatelessWidget {
             right: 0,
             bottom: 0,
             height: 58,
+
             child: Container(
               decoration: BoxDecoration(
                 color: AppColors.white,
+
                 border: Border(
                   top: BorderSide(color: AppColors.gray200, width: 0.8),
                 ),
               ),
 
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   _buildItem(
                     index: 0,
@@ -56,7 +58,9 @@ class KiyanzaBottomNavigation extends StatelessWidget {
                     label: 'Campagnes',
                   ),
 
-                  // Espace pour le bouton central
+                  // ============================================
+                  // ESPACE POUR LE BOUTON CENTRAL
+                  // ============================================
                   const SizedBox(width: 58),
 
                   _buildItem(
@@ -70,7 +74,7 @@ class KiyanzaBottomNavigation extends StatelessWidget {
                     index: 4,
                     icon: Icons.search_outlined,
                     activeIcon: Icons.search,
-                    label: 'Rechercher',
+                    label: 'Recherche',
                   ),
                 ],
               ),
@@ -82,14 +86,15 @@ class KiyanzaBottomNavigation extends StatelessWidget {
           // =====================================================
           Positioned(
             top: -5,
+
             child: GestureDetector(
               onTap: () {
                 onItemSelected(2);
               },
 
               child: Container(
-                width: 48,
-                height: 48,
+                width: 52,
+                height: 52,
 
                 decoration: BoxDecoration(
                   color: AppColors.green,
@@ -103,24 +108,9 @@ class KiyanzaBottomNavigation extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
 
-                  constraints: const BoxConstraints(
-                    minWidth: 36,
-                    minHeight: 36,
-                  ),
-
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const MenuScreen(),
-                      ),
-                    );
-                  },
-
-                  icon: const Icon(
+                child: const Center(
+                  child: Icon(
                     Icons.grid_view_rounded,
                     color: AppColors.white,
                     size: 24,
@@ -156,10 +146,13 @@ class KiyanzaBottomNavigation extends StatelessWidget {
 
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+
           children: [
             Icon(
               isSelected ? activeIcon : icon,
+
               size: 21,
+
               color: isSelected ? AppColors.green : AppColors.gray600,
             ),
 
@@ -167,10 +160,14 @@ class KiyanzaBottomNavigation extends StatelessWidget {
 
             Text(
               label,
+
               overflow: TextOverflow.ellipsis,
+
               style: TextStyle(
                 fontSize: AppSizes.text10,
+
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+
                 color: isSelected ? AppColors.green : AppColors.gray600,
               ),
             ),

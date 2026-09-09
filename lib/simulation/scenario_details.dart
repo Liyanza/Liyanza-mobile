@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
-import 'recommandation.dart';
+import 'recommendation.dart';
 
 class ScenarioDetailsScreen extends StatefulWidget {
   const ScenarioDetailsScreen({super.key});
