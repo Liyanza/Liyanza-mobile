@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../widget/bottom_navigation.dart';
 
-// IMPORTER TES PAGES
 import '../../features/home/home.dart';
 import '../../campagnes/campagne.dart';
 import '../../simulation/recommendation.dart';
-
 import '../../features/menu/menu.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -27,17 +25,43 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     _pages = [
       const HomeScreen(),
-      const CampaignsScreen(),
+
+      // =========================================================
+      // CAMPAGNES
+      // On transmet une fonction qui permet à la page Campagnes
+      // d'ouvrir le Menu.
+      // =========================================================
+      CampaignsScreen(
+        onOpenMenu: () {
+          _onItemSelected(2);
+        },
+      ),
+
+      // =========================================================
+      // MENU
+      // =========================================================
       const MenuScreen(),
+
+      // =========================================================
+      // RECOMMANDATIONS
+      // =========================================================
       const RecommendationsScreen(),
     ];
   }
+
+  // =============================================================
+  // CHANGEMENT D'ONGLET
+  // =============================================================
 
   void _onItemSelected(int index) {
     setState(() {
       _currentIndex = index;
     });
   }
+
+  // =============================================================
+  // BUILD
+  // =============================================================
 
   @override
   Widget build(BuildContext context) {

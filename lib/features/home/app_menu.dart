@@ -214,7 +214,13 @@ class AppMenuScreen extends StatelessWidget {
       case 'Campagnes':
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => const CampaignsScreen()),
+          MaterialPageRoute(
+            builder: (_) => CampaignsScreen(
+              onOpenMenu: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
         );
         break;
 

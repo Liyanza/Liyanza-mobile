@@ -7,6 +7,7 @@ import 'app_menu.dart';
 import '../../campagnes/campagne.dart';
 import '../../../monitoring_radio/monitoring.dart';
 import '../notification/notification.dart';
+import '../mon_profil/profil.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -214,7 +215,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const AppMenuScreen()),
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
               );
             },
 
@@ -663,7 +664,13 @@ class _HomeScreenState extends State<HomeScreen> {
           case 'Campagnes':
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const CampaignsScreen()),
+              MaterialPageRoute(
+                builder: (_) => CampaignsScreen(
+                  onOpenMenu: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
             );
             break;
 
@@ -783,7 +790,13 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CampaignsScreen()),
+                MaterialPageRoute(
+                  builder: (_) => CampaignsScreen(
+                    onOpenMenu: () {
+                      Navigator.pop(context);
+                    },
+                  ),
+                ),
               );
             },
 
