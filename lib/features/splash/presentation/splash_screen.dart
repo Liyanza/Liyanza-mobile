@@ -2,50 +2,42 @@ import 'package:flutter/material.dart';
 
 import '../../onboarding/presentation/onboarding.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
-
-  @override
-  State<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  // Au début, l'application est en chargement
-  bool _isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // Temps de chargement : 3 secondes
-    Future.delayed(const Duration(seconds: 5), () {
-      setState(() {
-        _isLoading = false;
-      });
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+
       body: SafeArea(
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+
             children: [
               const Spacer(),
+
+              // ================================================
+              // LOGO
+              // ================================================
 
               SizedBox(
                 width: 300,
                 height: 300,
+
                 child: Stack(
                   alignment: Alignment.center,
+
                   children: [
-                    Image.asset('assets/images/logo_tour.png', width: 300),
+                    Image.asset(
+                      'assets/images/logo_tour.png',
+                      width: 300,
+                    ),
 
                     Transform.translate(
                       offset: const Offset(15, 0),
+
                       child: Image.asset(
                         'assets/images/Logo_kiyanza.png',
                         width: 180,
@@ -54,9 +46,13 @@ class _SplashScreenState extends State<SplashScreen> {
                   ],
                 ),
               ),
+
               const SizedBox(height: 40),
 
-              // Titre
+              // ================================================
+              // TITRE
+              // ================================================
+
               RichText(
                 text: const TextSpan(
                   style: TextStyle(
@@ -64,10 +60,15 @@ class _SplashScreenState extends State<SplashScreen> {
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
+
                   children: [
-                    TextSpan(text: 'Bienvenue sur '),
+                    TextSpan(
+                      text: 'Bienvenue sur ',
+                    ),
+
                     TextSpan(
                       text: 'Kiyanza',
+
                       style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 24,
@@ -81,53 +82,59 @@ class _SplashScreenState extends State<SplashScreen> {
 
               const SizedBox(height: 10),
 
+              // ================================================
+              // SOUS-TITRE
+              // ================================================
+
               const Text(
                 'Votre copilote marketing intelligent',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey,
+                ),
               ),
 
               const Spacer(),
 
-              // Zone qui change après 3 secondes
-              AnimatedSwitcher(
-                duration: const Duration(seconds: 5),
+              // ================================================
+              // BOUTON DÉCOUVRIR
+              // ================================================
 
-                child: _isLoading
-                    ? const Column(
-                        key: ValueKey('loading'),
-                        children: [
-                          CircularProgressIndicator(),
+              SizedBox(
+                width: 220,
+                height: 50,
 
-                          SizedBox(height: 10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
 
-                          Text(
-                            'Chargement...',
-                            style: TextStyle(fontSize: 14, color: Colors.grey),
-                          ),
-                        ],
-                      )
-                    // Après le chargement
-                    : SizedBox(
-                        key: const ValueKey('discover'),
-                        width: 220,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const OnboardingScreen(),
-                              ),
-                            );
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF1BB14A),
-                            foregroundColor: Colors.white,
-                            shape: const StadiumBorder(),
-                          ),
-                          child: const Text('Découvrir'),
-                        ),
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const OnboardingScreen(),
                       ),
+                    );
+                  },
+
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1BB14A),
+                    foregroundColor: Colors.white,
+
+                    elevation: 0,
+
+                    shape: const StadiumBorder(),
+                  ),
+
+                  child: const Text(
+                    'Découvrir',
+
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
               ),
 
               const SizedBox(height: 90),

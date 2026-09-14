@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'login_success.dart';
+
 import 'forgot_password.dart';
 import '../../core/theme/kiyanza_colors.dart';
 import '../../core/theme/kiyanza_sizes.dart';
+import '../home/home.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -324,14 +325,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
                             child: ElevatedButton(
                               onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        const LoginSuccessScreen(),
-                                  ),
-                                );
-                              },
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const HomeScreen(),
+                        ),
+                      );
+                    },
 
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF1BB14A),
