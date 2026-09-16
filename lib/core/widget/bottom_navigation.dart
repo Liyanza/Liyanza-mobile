@@ -6,11 +6,13 @@ import '../theme/kiyanza_sizes.dart';
 class KiyanzaBottomNavigation extends StatelessWidget {
   final int currentIndex;
   final Function(int) onItemSelected;
+  final VoidCallback onCenterButtonTap;
 
   const KiyanzaBottomNavigation({
     super.key,
     required this.currentIndex,
     required this.onItemSelected,
+    required this.onCenterButtonTap,
   });
 
   @override
@@ -64,14 +66,14 @@ class KiyanzaBottomNavigation extends StatelessWidget {
                   const SizedBox(width: 58),
 
                   _buildItem(
-                    index: 3,
+                    index: 2,
                     icon: Icons.auto_awesome_outlined,
                     activeIcon: Icons.auto_awesome,
                     label: 'Recom...',
                   ),
 
                   _buildItem(
-                    index: 4,
+                    index: 3,
                     icon: Icons.search_outlined,
                     activeIcon: Icons.search,
                     label: 'Recherche',
@@ -88,9 +90,7 @@ class KiyanzaBottomNavigation extends StatelessWidget {
             top: -5,
 
             child: GestureDetector(
-              onTap: () {
-                onItemSelected(2);
-              },
+              onTap: onCenterButtonTap,
 
               child: Container(
                 width: 52,
@@ -111,9 +111,9 @@ class KiyanzaBottomNavigation extends StatelessWidget {
 
                 child: const Center(
                   child: Icon(
-                    Icons.grid_view_rounded,
+                    Icons.add,
                     color: AppColors.white,
-                    size: 24,
+                    size: 26,
                   ),
                 ),
               ),

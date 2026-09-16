@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
 import 'campagne_detail.dart';
-import 'nouvellecampagne.dart';
+import 'campaign_type_screen.dart';
 
 class CampaignsScreen extends StatefulWidget {
   final VoidCallback onOpenMenu;
@@ -815,7 +815,7 @@ class _CampaignsScreenState extends State<CampaignsScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => const NewCampaignScreen(),
+                builder: (context) => const CampaignTypeScreen(),
               ),
             );
           },

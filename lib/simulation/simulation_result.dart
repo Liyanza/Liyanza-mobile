@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
-import '../core/widget/bottom_navigation.dart';
+
 import 'scenario_details.dart';
 
 class SimulationResultsScreen extends StatelessWidget {
@@ -13,10 +13,7 @@ class SimulationResultsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
 
-      bottomNavigationBar: KiyanzaBottomNavigation(
-        currentIndex: 2,
-        onItemSelected: (index) {},
-      ),
+      
 
       body: SafeArea(
         child: Column(

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../core/theme/kiyanza_colors.dart';
 import '../core/theme/kiyanza_sizes.dart';
-import '../core/widget/bottom_navigation.dart';
+
+
 
 class RecommendationsScreen extends StatelessWidget {
   const RecommendationsScreen({super.key});
@@ -15,12 +16,7 @@ class RecommendationsScreen extends StatelessWidget {
       // =====================================================
       // BOTTOM NAVIGATION
       // =====================================================
-      bottomNavigationBar: KiyanzaBottomNavigation(
-        currentIndex: 2,
-        onItemSelected: (index) {
-          // Navigation à gérer plus tard
-        },
-      ),
+      
 
       body: SafeArea(
         child: Column(

@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import '../../core/theme/kiyanza_colors.dart';
 //import '../../core/theme/kiyanza_sizes.dart';
 import '../../IA/ia_report_analyse.dart';
-import 'app_menu.dart';
+import '../../simulation/recommendation.dart';
 import '../../campagnes/campagne.dart';
 import '../../../monitoring_radio/monitoring.dart';
 import '../notification/notification.dart';
 import '../mon_profil/profil.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  // Callback fourni par MainNavigationScreen pour basculer vers
+  // l'onglet Menu (même pattern que CampaignsScreen.onOpenMenu).
+  final VoidCallback onOpenMenu;
+
+  const HomeScreen({super.key, required this.onOpenMenu});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -20,6 +24,13 @@ class _HomeScreenState extends State<HomeScreen> {
   // ===========================================================
   // DATA
   // ===========================================================
+
+   static final List<_QuickAction> _quickActions = [
+    _QuickAction(icon: Icons.campaign_outlined, label: 'Campagnes'),
+    _QuickAction(icon: Icons.monitor_heart_outlined, label: 'Monitoring'),
+    _QuickAction(icon: Icons.menu_book_outlined, label: 'Rapports'),
+    _QuickAction(icon: Icons.more_horiz, label: 'Voir tout'),
+  ];
 
   static final List<_StatTile> _stats = [
     _StatTile(
@@ -53,12 +64,6 @@ class _HomeScreenState extends State<HomeScreen> {
     ),
   ];
 
-  static final List<_QuickAction> _quickActions = [
-    _QuickAction(icon: Icons.campaign_outlined, label: 'Campagnes'),
-    _QuickAction(icon: Icons.monitor_heart_outlined, label: 'Monitoring'),
-    _QuickAction(icon: Icons.menu_book_outlined, label: 'Rapports'),
-    _QuickAction(icon: Icons.more_horiz, label: 'Voir tout'),
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -95,11 +100,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
                         const SizedBox(height: 16),
 
-                        _buildAiRecommendationCard(context),
+                        _buildQuickActionsSection(context),
 
                         const SizedBox(height: 20),
 
-                        _buildQuickActionsSection(context),
+                        _buildAiRecommendationCard(context),
+
+
                       ],
                     ),
                   ),
@@ -112,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // =============================================
             Positioned(
               right: 16,
-              bottom: 78,
+              bottom: 24,
 
               child: _buildAiFloatingButton(context),
             ),
@@ -120,7 +127,11 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
 
-      bottomNavigationBar: _buildBottomNav(context),
+      // IMPORTANT :
+      // PAS DE bottomNavigationBar ICI.
+      //
+      // La Bottom Navigation est déjà gérée par
+      // MainNavigationScreen (même logique que CampaignsScreen).
     );
   }
 
@@ -139,12 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AppMenuScreen()),
-              );
-            },
+            onTap: widget.onOpenMenu,
 
             child: const Icon(Icons.menu, size: 24, color: AppColors.black),
           ),
@@ -448,6 +454,42 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+//actions rapide
+
+  Widget _buildQuickActionsSection(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+
+      children: [
+        const Text(
+          'Actions rapides',
+
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: AppColors.black,
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        Row(
+          children: List.generate(_quickActions.length, (index) {
+            return Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(
+                  right: index == _quickActions.length - 1 ? 0 : 8,
+                ),
+
+                child: _buildQuickActionCard(context, _quickActions[index]),
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
   // ===========================================================
   // RECOMMANDATION IA
   // ===========================================================
@@ -564,7 +606,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const AiReportAnalysisScreen(),
+                              builder: (_) => const RecommendationsScreen(),
                             ),
                           );
                         },
@@ -623,39 +665,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // ACTIONS RAPIDES
   // ===========================================================
 
-  Widget _buildQuickActionsSection(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-
-      children: [
-        const Text(
-          'Actions rapides',
-
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.black,
-          ),
-        ),
-
-        const SizedBox(height: 12),
-
-        Row(
-          children: List.generate(_quickActions.length, (index) {
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: index == _quickActions.length - 1 ? 0 : 8,
-                ),
-
-                child: _buildQuickActionCard(context, _quickActions[index]),
-              ),
-            );
-          }),
-        ),
-      ],
-    );
-  }
 
   Widget _buildQuickActionCard(BuildContext context, _QuickAction action) {
     return GestureDetector(
@@ -767,103 +776,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ===========================================================
-  // BOTTOM NAV
-  // ===========================================================
-
-  Widget _buildBottomNav(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: Color(0xFFF3F4F6), width: 2)),
-      ),
-
-      padding: const EdgeInsets.symmetric(vertical: 8),
-
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-        children: [
-          _buildNavItem(Icons.home, 'Accueil', true),
-
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => CampaignsScreen(
-                    onOpenMenu: () {
-                      Navigator.pop(context);
-                    },
-                  ),
-                ),
-              );
-            },
-
-            child: _buildNavItem(Icons.campaign_outlined, 'Campagnes', false),
-          ),
-
-          Transform.translate(
-            offset: const Offset(0, -14),
-
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const MonitoringScreen()),
-                );
-              },
-
-              child: Container(
-                width: 48,
-                height: 48,
-
-                decoration: const BoxDecoration(
-                  color: Color(0xFF16A34A),
-                  shape: BoxShape.circle,
-                ),
-
-                child: const Icon(
-                  Icons.dashboard_outlined,
-                  size: 22,
-                  color: AppColors.white,
-                ),
-              ),
-            ),
-          ),
-
-          _buildNavItem(Icons.lightbulb_outline, 'Recom....', false),
-          _buildNavItem(Icons.search, 'Rechercher', false),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool selected) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-
-      children: [
-        Icon(
-          icon,
-          size: 22,
-          color: selected ? AppColors.green : AppColors.gray400,
-        ),
-
-        const SizedBox(height: 3),
-
-        Text(
-          label,
-
-          style: TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-            color: selected ? AppColors.green : AppColors.gray400,
-          ),
-        ),
-      ],
-    );
-  }
 }
 
 // =============================================================

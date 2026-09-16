@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
-import '../../../core/theme/kiyanza_sizes.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -17,9 +16,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     NotificationItem(
       title: 'Nouveau rapport disponible',
       description:
-          'Le rapport hebdomadaire de la campagne Promo Orange Money est prêt.',
+          'Le rapport hebdomadaire de la campagne « Promo Orange Money » est prêt.',
       date: '10:30',
-      category: 'AUJOURD’HUI',
+      category: "AUJOURD'HUI",
       type: NotificationType.report,
       isRead: false,
     ),
@@ -36,7 +35,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     NotificationItem(
       title: 'Suggestion IA',
-      description: 'Kiyanza a une recommandation pour optimiser votre budget Facebook Ads.',
+      description:
+          'Kiyanza IA a une recommandation pour optimiser votre budget Facebook Ads.',
       date: 'Hier',
       category: 'HIER',
       type: NotificationType.ai,
@@ -46,7 +46,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     NotificationItem(
       title: 'Campagne en pause',
-      description: 'La campagne « Offre Spéciale été » a été automatiquement mise en pause.',
+      description:
+          'La campagne « Offre Spéciale Été » a été automatiquement mise en pause.',
       date: '12 Mai',
       category: '12 MAI 2024',
       type: NotificationType.campaign,
@@ -55,7 +56,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     NotificationItem(
       title: 'Mise à jour disponible',
-      description: 'De nouvelles fonctionnalités Kiyanza sont disponibles. Découvrez-les !',
+      description:
+          'De nouvelles fonctionnalités KIYANZA sont disponibles. Découvrez-les !',
       date: '12 Mai',
       category: '12 MAI 2024',
       type: NotificationType.update,
@@ -96,15 +98,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             // =================================================
             // HEADER
             // =================================================
-
             _buildHeader(),
 
             // =================================================
             // FILTRES
             // =================================================
             _buildFilters(),
-
-            const SizedBox(height: 10),
 
             // =================================================
             // NOTIFICATIONS
@@ -125,8 +124,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   // ===========================================================
 
   Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1.2)),
+      ),
 
       child: Row(
         children: [
@@ -137,18 +140,18 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             },
 
             child: Container(
-              width: 30,
-              height: 30,
+              width: 32,
+              height: 32,
 
-              decoration: BoxDecoration(
-                color: AppColors.gray100,
+              decoration: const BoxDecoration(
+                color: Color(0xFFF3F4F6),
                 shape: BoxShape.circle,
               ),
 
               child: const Icon(
                 Icons.chevron_left,
-                size: 19,
-                color: AppColors.white,
+                size: 20,
+                color: Color(0xFF111827),
               ),
             ),
           ),
@@ -158,9 +161,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
               child: Text(
                 'Notifications',
                 style: TextStyle(
-                  fontSize: AppSizes.text12,
+                  fontSize: 16,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.black,
+                  color: Color(0xFF111827),
                 ),
               ),
             ),
@@ -168,15 +171,15 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
           // Filtre
           Container(
-            width: 30,
-            height: 30,
+            width: 32,
+            height: 32,
 
-            decoration: BoxDecoration(
-              color: AppColors.gray100,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF3F4F6),
               shape: BoxShape.circle,
             ),
 
-            child: const Icon(Icons.tune, size: 15, color: AppColors.white),
+            child: const Icon(Icons.tune, size: 16, color: Color(0xFF111827)),
           ),
         ],
       ),
@@ -191,14 +194,14 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final filters = ['Toutes', 'Non lues', 'Mentions'];
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
 
       child: Row(
         children: List.generate(filters.length, (index) {
           final bool selected = _selectedFilter == index;
 
           return Padding(
-            padding: const EdgeInsets.only(right: 7),
+            padding: const EdgeInsets.only(right: 8),
 
             child: GestureDetector(
               onTap: () {
@@ -211,27 +214,25 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 duration: const Duration(milliseconds: 200),
 
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
+                  horizontal: 14,
                   vertical: 6,
                 ),
 
                 decoration: BoxDecoration(
-                  color: selected ? AppColors.green : AppColors.gray100,
-
-                  borderRadius: BorderRadius.circular(20),
+                  color: selected ? AppColors.green : const Color(0xFFF3F4F6),
+                  border: selected
+                      ? null
+                      : Border.all(color: const Color(0xFFE5E7EB)),
+                  borderRadius: BorderRadius.circular(100),
                 ),
 
                 child: Text(
                   filters[index],
 
                   style: TextStyle(
-                    fontSize: 8,
-
+                    fontSize: 12,
                     fontWeight: FontWeight.w600,
-
-                    color: selected
-                        ? AppColors.white
-                        : AppColors.white.withOpacity(0.6),
+                    color: selected ? AppColors.white : const Color(0xFF374151),
                   ),
                 ),
               ),
@@ -248,7 +249,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   Widget _buildNotificationList(List<NotificationItem> notifications) {
     return ListView.builder(
-      padding: const EdgeInsets.fromLTRB(12, 4, 12, 20),
+      padding: const EdgeInsets.only(bottom: 20),
 
       itemCount: notifications.length,
 
@@ -265,15 +266,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           children: [
             if (showCategory)
               Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
 
                 child: Text(
                   notification.category,
 
                   style: const TextStyle(
-                    fontSize: 7,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.gray500,
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                    color: Color(0xFF9CA3AF),
                   ),
                 ),
               ),
@@ -300,14 +302,10 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       child: Container(
         width: double.infinity,
 
-        margin: const EdgeInsets.only(bottom: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
-        padding: const EdgeInsets.symmetric(vertical: 9, horizontal: 7),
-
-        decoration: BoxDecoration(
-          color: notification.isRead ? AppColors.white : AppColors.gray500,
-
-          borderRadius: BorderRadius.circular(10),
+        decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(color: Color(0xFFF9FAFB), width: 1.2)),
         ),
 
         child: Row(
@@ -317,7 +315,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
             // Icône
             _buildNotificationIcon(notification.type),
 
-            const SizedBox(width: 9),
+            const SizedBox(width: 12),
 
             // Contenu
             Expanded(
@@ -333,32 +331,43 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         child: Text(
                           notification.title,
 
-                          style: TextStyle(
-                            fontSize: 9,
-
-                            fontWeight: notification.isRead
-                                ? FontWeight.w500
-                                : FontWeight.w700,
-
-                            color: AppColors.black,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF111827),
                           ),
                         ),
                       ),
 
-                      const SizedBox(width: 5),
+                      const SizedBox(width: 6),
 
-                      Text(
-                        notification.date,
+                      Row(
+                        children: [
+                          if (!notification.isRead) ...[
+                            Container(
+                              width: 6,
+                              height: 6,
+                              margin: const EdgeInsets.only(right: 4, top: 3),
+                              decoration: const BoxDecoration(
+                                color: AppColors.green,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ],
+                          Text(
+                            notification.date,
 
-                        style: const TextStyle(
-                          fontSize: 6,
-                          color: AppColors.gray400,
-                        ),
+                            style: const TextStyle(
+                              fontSize: 10.5,
+                              color: Color(0xFF9CA3AF),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 3),
+                  const SizedBox(height: 2),
 
                   Text(
                     notification.description,
@@ -368,9 +377,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     overflow: TextOverflow.ellipsis,
 
                     style: const TextStyle(
-                      fontSize: 7,
-                      height: 1.3,
-                      color: AppColors.gray500,
+                      fontSize: 12,
+                      height: 1.4,
+                      color: Color(0xFF6B7280),
                     ),
                   ),
                 ],
@@ -387,46 +396,73 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   // ===========================================================
 
   Widget _buildNotificationIcon(NotificationType type) {
-    IconData icon;
-    Color color;
+    late final Color bgColor;
+    late final Widget child;
 
     switch (type) {
       case NotificationType.report:
-        icon = Icons.description_outlined;
-        color = AppColors.blue;
+        bgColor = const Color(0xFFEFF6FF);
+        child = const Icon(
+          Icons.description_outlined,
+          size: 18,
+          color: AppColors.blue,
+        );
         break;
 
       case NotificationType.success:
-        icon = Icons.check_circle_outline;
-        color = AppColors.green;
+        bgColor = const Color(0xFFFFFBEB);
+        child = const Icon(
+          Icons.check_circle_outline,
+          size: 18,
+          color: Color(0xFFCA8A04),
+        );
         break;
 
       case NotificationType.ai:
-        icon = Icons.auto_awesome;
-        color = AppColors.blue;
+        // Sur la maquette, la notif IA affiche un badge bleu plein
+        // avec l'initiale "K" (Kiyanza) plutôt qu'une icône générique.
+        bgColor =  AppColors.blue;
+        child = const Text(
+          'K',
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+          ),
+        );
         break;
 
       case NotificationType.campaign:
-        icon = Icons.campaign_outlined;
-        color = AppColors.green;
+        bgColor = const Color(0xFFFFF7ED);
+        child = const Icon(
+          Icons.campaign_outlined,
+          size: 18,
+          color: Color(0xFFEA580C),
+        );
         break;
 
       case NotificationType.update:
-        icon = Icons.system_update_alt;
-        color = AppColors.blue;
+        bgColor = const Color(0xFFF9FAFB);
+        child = const Icon(
+          Icons.restore,
+          size: 18,
+          color: Color(0xFF6B7280),
+        );
         break;
     }
 
     return Container(
-      width: 28,
-      height: 28,
+      width: 40,
+      height: 40,
+
+      alignment: Alignment.center,
 
       decoration: BoxDecoration(
-        color: color.withOpacity(0.10),
-        shape: BoxShape.circle,
+        color: bgColor,
+        borderRadius: BorderRadius.circular(16),
       ),
 
-      child: Icon(icon, size: 14, color: color),
+      child: child,
     );
   }
 
@@ -441,27 +477,27 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
         children: [
           Container(
-            width: 45,
-            height: 45,
+            width: 56,
+            height: 56,
 
-            decoration: BoxDecoration(
-              color: AppColors.gray100,
+            decoration: const BoxDecoration(
+              color: Color(0xFFF3F4F6),
               shape: BoxShape.circle,
             ),
 
             child: const Icon(
               Icons.notifications_none,
-              color: AppColors.gray400,
-              size: 22,
+              color: Color(0xFF9CA3AF),
+              size: 26,
             ),
           ),
 
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
 
           const Text(
-            'Aucune notification pour l’instant',
+            "Aucune notification pour l'instant",
 
-            style: TextStyle(fontSize: 9, color: AppColors.gray500),
+            style: TextStyle(fontSize: 13, color: Color(0xFF6B7280)),
           ),
         ],
       ),

@@ -4,6 +4,7 @@ import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
 import 'campaign_objective_screen.dart';
 import '../campagne_radio/radio_station_screen.dart';
+import 'campaign_step_dots.dart';
 
 class CampaignTypeScreen extends StatelessWidget {
   const CampaignTypeScreen({super.key});
@@ -47,6 +48,12 @@ class CampaignTypeScreen extends StatelessWidget {
             // =================================================
 
             _buildHeader(context),
+            // =================================================
+            // STEP DOTS
+            // =================================================
+
+            const CampaignStepDots(currentStep: 0),
+
 
             // =================================================
             // CONTENU
