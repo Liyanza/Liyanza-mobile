@@ -851,6 +851,7 @@ class _AiReportAnalysisScreenState extends State<AiReportAnalysisScreen> {
 
               child: TextField(
                 controller: _messageController,
+                textAlignVertical: TextAlignVertical.center,
 
                 decoration: const InputDecoration(
                   hintText: 'Écrivez votre message...',
@@ -859,9 +860,11 @@ class _AiReportAnalysisScreenState extends State<AiReportAnalysisScreen> {
 
                   border: InputBorder.none,
 
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 11,
+                  contentPadding: EdgeInsets.only(
+                    left: 14,
+                    right: 14,
+                    top: 8,
+                    bottom: 14,
                   ),
                 ),
               ),

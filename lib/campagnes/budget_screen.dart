@@ -295,38 +295,35 @@ class _BudgetScreenState extends State<BudgetScreen> {
   // ===========================================================
 
   Widget _buildPresetsRow() {
-    return Row(
-      children: [
-        ...List.generate(_presets.length, (index) {
-          final bool selected = _selectedPresetIndex == index;
+    final presets = [..._presets, _BudgetPreset(label: 'Autre', amount: '')];
 
-          return Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(
-                right: index == _presets.length - 1 ? 0 : 8,
-              ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const spacing = 8.0;
+        final double itemWidth = (constraints.maxWidth - spacing * 2) / 3;
 
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: List.generate(presets.length, (index) {
+            final preset = presets[index];
+            final bool isOther = index == presets.length - 1;
+
+            return SizedBox(
+              width: itemWidth,
               child: _buildPresetChip(
-                label: _presets[index].label,
-                selected: selected,
-                onTap: () => _selectPreset(index),
+                label: preset.label,
+                selected: isOther
+                    ? _selectedPresetIndex == -1
+                    : _selectedPresetIndex == index,
+                onTap: isOther
+                    ? () => setState(() => _selectedPresetIndex = -1)
+                    : () => _selectPreset(index),
               ),
-            ),
-          );
-        }),
-
-        const SizedBox(width: 8),
-
-        Expanded(
-          child: _buildPresetChip(
-            label: 'Autre',
-            selected: _selectedPresetIndex == -1,
-            onTap: () {
-              setState(() => _selectedPresetIndex = -1);
-            },
-          ),
-        ),
-      ],
+            );
+          }),
+        );
+      },
     );
   }
 
@@ -339,6 +336,7 @@ class _BudgetScreenState extends State<BudgetScreen> {
       onTap: onTap,
 
       child: Container(
+        height: 40,
         padding: const EdgeInsets.symmetric(vertical: 10),
 
         decoration: BoxDecoration(
@@ -458,19 +456,26 @@ class _BudgetScreenState extends State<BudgetScreen> {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
       children: [
-        Text(
-          label,
-
-          style: const TextStyle(fontSize: 12, color: AppColors.gray400),
+        Expanded(
+          child: Text(
+            label,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: AppColors.gray400),
+          ),
         ),
 
-        Text(
-          value,
+        const SizedBox(width: 8),
 
-          style: const TextStyle(
-            fontSize: 12.5,
-            fontWeight: FontWeight.w600,
-            color: AppColors.black,
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
+            ),
           ),
         ),
       ],

@@ -108,60 +108,71 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
 
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
 
-                      children: [
-                        // Illustration
-                        SizedBox(
-                          width: 300,
-                          height: 300,
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              // Image PNG des cercles en arrière-plan
-                              Image.asset(
-                                'assets/images/cercles.png',
-                                width: 280,
-                                height: 280,
-                                fit: BoxFit.contain,
-                              ),
+                        children: [
+                          // Illustration
+                          LayoutBuilder(
+                            builder: (context, constraints) {
+                              final double illustrationSize =
+                                  constraints.maxWidth < 300
+                                  ? constraints.maxWidth
+                                  : 300;
 
-                              // Illustration au-dessus
-                              Image.asset(
-                                onboardingData[index]['image']!,
-                                width: 250,
-                                height: 250,
-                                fit: BoxFit.contain,
-                              ),
-                            ],
+                              return SizedBox(
+                                width: illustrationSize,
+                                height: illustrationSize,
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    // Image PNG des cercles en arrière-plan
+                                    Image.asset(
+                                      'assets/images/cercles.png',
+                                      width: illustrationSize * 0.93,
+                                      height: illustrationSize * 0.93,
+                                      fit: BoxFit.contain,
+                                    ),
+
+                                    // Illustration au-dessus
+                                    Image.asset(
+                                      onboardingData[index]['image']!,
+                                      width: illustrationSize * 0.83,
+                                      height: illustrationSize * 0.83,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 50),
+                          const SizedBox(height: 50),
 
-                        // Titre
-                        Text(
-                          onboardingData[index]['title']!,
-                          textAlign: TextAlign.center,
+                          // Titre
+                          Text(
+                            onboardingData[index]['title']!,
+                            textAlign: TextAlign.center,
 
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: AppSizes.text24,
-                            fontWeight: FontWeight.bold,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: AppSizes.text24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                        Text(
-                          onboardingData[index]['description']!,
-                          textAlign: TextAlign.center,
+                          Text(
+                            onboardingData[index]['description']!,
+                            textAlign: TextAlign.center,
 
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
+                          const SizedBox(height: 12),
+                        ],
+                      ),
                     ),
                   );
                 },

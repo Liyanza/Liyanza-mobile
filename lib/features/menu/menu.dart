@@ -183,8 +183,8 @@ class MenuScreen extends StatelessWidget {
 
       itemCount: _items.length,
 
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 180,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
         childAspectRatio: 1.35,

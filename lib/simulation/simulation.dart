@@ -53,78 +53,81 @@ class _SimulationScreenState extends State<SimulationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        backgroundColor: AppColors.white,
 
-      body: SafeArea(
-        child: Column(
-          children: [
-            // ============================================
-            // HEADER
-            // ============================================
+        body: SafeArea(
+          child: Column(
+            children: [
+              // ============================================
+              // HEADER
+              // ============================================
 
-            _buildHeader(context),
+              _buildHeader(context),
 
-            // ============================================
-            // CONTENU
-            // ============================================
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+              // ============================================
+              // CONTENU
+              // ============================================
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
 
-                child: Column(
-                  children: [
-                    const Spacer(),
+                  child: Column(
+                    children: [
+                      const Spacer(),
 
-                    // ======================================
-                    // TITRE
-                    // ======================================
-                    const Text(
-                      'Nous analysons et simulons\nvos scénarios...',
+                      // ======================================
+                      // TITRE
+                      // ======================================
+                      const Text(
+                        'Nous analysons et simulons\nvos scénarios...',
 
-                      textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
 
-                      style: TextStyle(
-                        fontSize: AppSizes.text20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.black,
+                        style: TextStyle(
+                          fontSize: AppSizes.text20,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.black,
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 12),
+                      const SizedBox(height: 12),
 
-                    const Text(
-                      'Notre IA compare les performances prévisionnelles\npour vous proposer la meilleure stratégie.',
+                      const Text(
+                        'Notre IA compare les performances prévisionnelles\npour vous proposer la meilleure stratégie.',
 
-                      textAlign: TextAlign.center,
+                        textAlign: TextAlign.center,
 
-                      style: TextStyle(
-                        fontSize: AppSizes.text12,
-                        color: AppColors.gray400,
-                        height: 1.5,
+                        style: TextStyle(
+                          fontSize: AppSizes.text12,
+                          color: AppColors.gray400,
+                          height: 1.5,
+                        ),
                       ),
-                    ),
 
-                    const SizedBox(height: 28),
+                      const SizedBox(height: 28),
 
-                    // ======================================
-                    // PROGRESSION CIRCULAIRE
-                    // ======================================
-                    _buildProgressCircle(),
+                      // ======================================
+                      // PROGRESSION CIRCULAIRE
+                      // ======================================
+                      _buildProgressCircle(),
 
-                    const SizedBox(height: 32),
+                      const SizedBox(height: 32),
 
-                    // ======================================
-                    // ETAPES
-                    // ======================================
-                    _buildAnalysisSteps(),
+                      // ======================================
+                      // ETAPES
+                      // ======================================
+                      _buildAnalysisSteps(),
 
-                    const Spacer(),
-                  ],
+                      const Spacer(),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -140,17 +143,7 @@ class _SimulationScreenState extends State<SimulationScreen> {
 
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-
-            child: const Icon(
-              Icons.arrow_back_ios_new,
-              size: 18,
-              color: AppColors.black,
-            ),
-          ),
+          const SizedBox(width: 18),
 
           const Expanded(
             child: Center(

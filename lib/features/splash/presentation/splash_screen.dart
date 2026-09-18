@@ -7,52 +7,35 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double logoSize = MediaQuery.sizeOf(context).width < 260
+        ? MediaQuery.sizeOf(context).width
+        : 250;
+
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: SafeArea(
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-
             children: [
-              const Spacer(),
-
-              // ================================================
-              // LOGO
-              // ================================================
-
+              const SizedBox(height: 10),
               SizedBox(
-                width: 300,
-                height: 300,
-
+                width: logoSize,
+                height: logoSize,
                 child: Stack(
                   alignment: Alignment.center,
-
                   children: [
-                    Image.asset(
-                      'assets/images/logo_tour.png',
-                      width: 300,
-                    ),
-
+                    Image.asset('assets/images/logo_tour.png', width: logoSize),
                     Transform.translate(
                       offset: const Offset(15, 0),
-
-                      child: Image.asset(
-                        'assets/images/Logo_kiyanza.png',
+                      child: const Image(
+                        image: AssetImage('assets/images/Logo_kiyanza.png'),
                         width: 180,
                       ),
                     ),
                   ],
                 ),
               ),
-
-              const SizedBox(height: 40),
-
-              // ================================================
-              // TITRE
-              // ================================================
-
+              const SizedBox(height: 60),
               RichText(
                 text: const TextSpan(
                   style: TextStyle(
@@ -60,15 +43,10 @@ class SplashScreen extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),
-
                   children: [
-                    TextSpan(
-                      text: 'Bienvenue sur ',
-                    ),
-
+                    TextSpan(text: 'Bienvenue sur '),
                     TextSpan(
                       text: 'Kiyanza',
-
                       style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 24,
@@ -79,65 +57,37 @@ class SplashScreen extends StatelessWidget {
                   ],
                 ),
               ),
-
               const SizedBox(height: 10),
-
-              // ================================================
-              // SOUS-TITRE
-              // ================================================
-
               const Text(
                 'Votre copilote marketing intelligent',
-
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey,
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
-
-              const Spacer(),
-
-              // ================================================
-              // BOUTON DÉCOUVRIR
-              // ================================================
-
+              const SizedBox(height: 250),
               SizedBox(
                 width: 220,
                 height: 50,
-
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-
                       MaterialPageRoute(
-                        builder: (context) =>
-                            const OnboardingScreen(),
+                        builder: (context) => const OnboardingScreen(),
                       ),
                     );
                   },
-
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF1BB14A),
                     foregroundColor: Colors.white,
-
                     elevation: 0,
-
                     shape: const StadiumBorder(),
                   ),
-
                   child: const Text(
                     'Découvrir',
-
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                   ),
                 ),
               ),
-
-              const SizedBox(height: 90),
+              const SizedBox(height: 40),
             ],
           ),
         ),

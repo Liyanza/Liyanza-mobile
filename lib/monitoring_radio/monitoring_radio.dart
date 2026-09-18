@@ -112,6 +112,14 @@ class _MonitoringRadioScreenState extends State<MonitoringRadioScreen> {
 
     return GestureDetector(
       onTap: () {
+        if (index == 2) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const MonitoringReportScreen()),
+          );
+          return;
+        }
+
         setState(() {
           selectedTab = index;
         });
@@ -144,7 +152,7 @@ class _MonitoringRadioScreenState extends State<MonitoringRadioScreen> {
       return _buildAnalysis();
     }
 
-    return _buildReport();
+    return _buildAnalysis();
   }
 
   // ============================================
@@ -335,35 +343,6 @@ class _MonitoringRadioScreenState extends State<MonitoringRadioScreen> {
             style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
           ),
         ],
-      ),
-    );
-  }
-
-  // ============================================
-  // RAPPORT
-  // ============================================
-
-  Widget _buildReport() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const MonitoringReportScreen()),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.green,
-            minimumSize: const Size(double.infinity, 50),
-            shape: const StadiumBorder(),
-          ),
-          child: const Text(
-            'Voir le rapport',
-            style: TextStyle(color: Colors.white),
-          ),
-        ),
       ),
     );
   }

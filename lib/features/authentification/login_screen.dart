@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'forgot_password.dart';
 import '../../core/theme/kiyanza_colors.dart';
-import '../../core/theme/kiyanza_sizes.dart';
-import '../../core/navigation/main_navigation.dart';
+import '../../../services_API/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,15 +14,33 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
   bool _rememberMe = false;
   bool _obscurePassword = true;
+  
 
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
+  Future<void> _handleLogin() async {
+    setState(() => _isLoading = true);
+
+    final success = await _authService.login(
+      _emailController.text.trim(),
+      _passwordController.text,
+    );
+
+    setState(() => _isLoading = false);
+
+    if (mounted) {
+      if (success) {
+        // Rediriger vers l'accueil ou le menu principal
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Identifiants invalides ou serveur indisponible')),
+        );
+      }
+    }
   }
 
   @override
@@ -46,7 +63,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       backgroundColor: const Color(0xFF0B4B1F),
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
           // =========================
@@ -80,12 +97,12 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(height: h(28)),
+                  SizedBox(height: h(30)),
 
                   // LOGO (colibri blanc)
                   Image.asset('assets/images/logo_blanc.png', width: w(90)),
 
-                  SizedBox(height: h(14)),
+                  SizedBox(height: h(35)),
 
                   // TITRE
                   Text(
@@ -106,11 +123,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontFamily: 'Montserrat',
                       fontSize: s(16),
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.92),
+                      color: Colors.white.withValues(alpha: 0.92),
                     ),
                   ),
 
-                  SizedBox(height: h(150)),
+                  SizedBox(height: h(100)),
 
                   // =========================
                   // CARTE FORMULAIRE — occupe le reste, jamais de scroll
@@ -118,9 +135,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(
                     child: LayoutBuilder(
                       builder: (context, constraints) {
-                        return FittedBox(
-                          fit: BoxFit.scaleDown,
-                          alignment: Alignment.topCenter,
+                        return SingleChildScrollView(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
                           child: ConstrainedBox(
                             constraints: BoxConstraints(
                               minWidth: constraints.maxWidth,
@@ -134,10 +151,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                 borderRadius: BorderRadius.circular(s(15)),
                               ),
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       // GOOGLE — bouton pilule
                                       _SocialButton(
@@ -149,8 +168,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                           height: s(18),
                                           // Si l'asset n'existe pas encore dans le projet,
                                           // on affiche un repli au lieu de planter.
-                                          errorBuilder: (context, error, stackTrace) =>
-                                              _GoogleGIcon(size: s(18)),
+                                          errorBuilder: (
+                                            context,
+                                            error,
+                                            stackTrace,
+                                          ) => _GoogleGIcon(size: s(18)),
                                         ),
                                         label: 'Continuer avec  Google',
                                         fontSize: s(16),
@@ -179,10 +201,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       Row(
                                         children: [
                                           Expanded(
-                                            child: Divider(color: const Color(0xFFE5E7EB), height: 1),
+                                            child: Divider(
+                                              color: const Color(0xFFE5E7EB),
+                                              height: 1,
+                                            ),
                                           ),
                                           Padding(
-                                            padding: EdgeInsets.symmetric(horizontal: w(16)),
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: w(16),
+                                            ),
                                             child: Text(
                                               'Ou se connecter avec',
                                               style: TextStyle(
@@ -193,7 +220,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                             ),
                                           ),
                                           Expanded(
-                                            child: Divider(color: const Color(0xFFE5E7EB), height: 1),
+                                            child: Divider(
+                                              color: const Color(0xFFE5E7EB),
+                                              height: 1,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -207,7 +237,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                         height: h(46),
                                         radius: s(10),
                                         fontSize: s(16),
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                       ),
 
                                       SizedBox(height: h(16)),
@@ -232,7 +263,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           onPressed: () {
                                             setState(() {
-                                              _obscurePassword = !_obscurePassword;
+                                              _obscurePassword =
+                                                  !_obscurePassword;
                                             });
                                           },
                                         ),
@@ -242,7 +274,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                       // SE SOUVENIR / MOT DE PASSE OUBLIÉ
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           GestureDetector(
                                             onTap: () {
@@ -263,7 +296,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     fontFamily: 'Poppins',
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: s(12),
-                                                    color: const Color(0xFF6C7278),
+                                                    color: const Color(
+                                                      0xFF6C7278,
+                                                    ),
                                                   ),
                                                 ),
                                               ],
@@ -274,7 +309,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => const ForgotPasswordScreen(),
+                                                  builder: (context) =>
+                                                      const ForgotPasswordScreen(),
                                                 ),
                                               );
                                             },
@@ -298,51 +334,43 @@ class _LoginScreenState extends State<LoginScreen> {
                                         width: double.infinity,
                                         height: h(48),
                                         child: ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => const MainNavigationScreen(),
-                                              ),
-                                            );
-                                          },
+                                          onPressed:
+                                              _isLoading ? null : _handleLogin,
                                           style: ElevatedButton.styleFrom(
                                             padding: EdgeInsets.zero,
-                                            backgroundColor: Colors.transparent,
+                                            backgroundColor: AppColors.green,
                                             shadowColor: Colors.transparent,
                                             foregroundColor: Colors.white,
                                             elevation: 0,
                                             shape: RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.circular(s(100)),
+                                              borderRadius:
+                                                  BorderRadius.circular(s(100)),
                                             ),
-                                          ).copyWith(
-                                            backgroundColor: WidgetStateProperty.all(Colors.transparent),
                                           ),
-                                          child: Ink(
-                                            decoration: BoxDecoration(
-                                              gradient: const LinearGradient(
-                                                begin: Alignment.centerLeft,
-                                                end: Alignment.centerRight,
-                                                colors: [
-                                                  AppColors.green,
-                                                  Color(0xFF0B4B1F),
-                                                ],
-                                              ),
-                                              borderRadius: BorderRadius.circular(s(100)),
-                                            ),
-                                            child: Container(
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                'Se connecter',
-                                                style: TextStyle(
-                                                  fontFamily: 'Poppins',
-                                                  fontWeight: FontWeight.w600,
-                                                  fontSize: s(16),
-                                                  color: Colors.white,
+                                          child: _isLoading
+                                              ? const SizedBox(
+                                                  width: 20,
+                                                  height: 20,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                        strokeWidth: 2,
+                                                        valueColor:
+                                                            AlwaysStoppedAnimation<
+                                                                Color>(
+                                                          Colors.white,
+                                                        ),
+                                                      ),
+                                                )
+                                              : Text(
+                                                  'Se connecter',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontWeight:
+                                                        FontWeight.w600,
+                                                    fontSize: s(16),
+                                                    color: Colors.white,
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                          ),
                                         ),
                                       ),
                                     ],
@@ -352,7 +380,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   Padding(
                                     padding: EdgeInsets.only(top: h(16)),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Text(
                                           'Pas encore de compte ? ',
@@ -551,7 +580,10 @@ class _AuthField extends StatelessWidget {
             color: const Color(0xFF1A1C1E),
           ),
           suffixIcon: suffix,
-          suffixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
+          suffixIconConstraints: const BoxConstraints(
+            minWidth: 0,
+            minHeight: 0,
+          ),
         ),
       ),
     );

@@ -168,13 +168,15 @@ class _RadioCampaignDetailsScreenState
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
           children: [
-            Text(
-              value,
-
-              style: const TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: AppColors.black,
+            Expanded(
+              child: Text(
+                value,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.black,
+                ),
               ),
             ),
 

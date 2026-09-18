@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import '../core/theme/kiyanza_colors.dart';
 import '../core/theme/kiyanza_sizes.dart';
 
-
-
 class RecommendationsScreen extends StatelessWidget {
   const RecommendationsScreen({super.key});
 
@@ -16,8 +14,6 @@ class RecommendationsScreen extends StatelessWidget {
       // =====================================================
       // BOTTOM NAVIGATION
       // =====================================================
-      
-
       body: SafeArea(
         child: Column(
           children: [

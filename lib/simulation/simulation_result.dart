@@ -13,8 +13,6 @@ class SimulationResultsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.white,
 
-      
-
       body: SafeArea(
         child: Column(
           children: [

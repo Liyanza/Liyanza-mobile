@@ -399,23 +399,24 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
 
           const SizedBox(height: 12),
 
-          GridView.count(
-            crossAxisCount: 2,
+          GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 2.1,
-
-            children: _summary.entries.map((entry) {
-              final bool isPerformance = entry.key == 'Performance';
-
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 220,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 2.1,
+            ),
+            itemCount: _summary.length,
+            itemBuilder: (context, index) {
+              final entry = _summary.entries.elementAt(index);
               return _buildSummaryTile(
                 label: entry.key,
                 value: entry.value,
-                showProgress: isPerformance,
+                showProgress: entry.key == 'Performance',
               );
-            }).toList(),
+            },
           ),
 
           const SizedBox(height: 20),
@@ -643,15 +644,18 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
 
           const SizedBox(height: 12),
 
-          GridView.count(
-            crossAxisCount: 2,
+          GridView.builder(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 1.65,
-
-            children: _keyMetrics.map((metric) {
+            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+              maxCrossAxisExtent: 220,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 1.65,
+            ),
+            itemCount: _keyMetrics.length,
+            itemBuilder: (context, index) {
+              final metric = _keyMetrics[index];
               return Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
@@ -705,7 +709,7 @@ class _CampaignDetailScreenState extends State<CampaignDetailScreen>
                   ],
                 ),
               );
-            }).toList(),
+            },
           ),
 
           const SizedBox(height: 20),

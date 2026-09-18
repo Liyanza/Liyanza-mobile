@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   // DATA
   // ===========================================================
 
-   static final List<_QuickAction> _quickActions = [
+  static final List<_QuickAction> _quickActions = [
     _QuickAction(icon: Icons.campaign_outlined, label: 'Campagnes'),
     _QuickAction(icon: Icons.monitor_heart_outlined, label: 'Monitoring'),
     _QuickAction(icon: Icons.menu_book_outlined, label: 'Rapports'),
@@ -63,7 +63,6 @@ class _HomeScreenState extends State<HomeScreen> {
       growth: '↗ 12%',
     ),
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,8 +104,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(height: 20),
 
                         _buildAiRecommendationCard(context),
-
-
                       ],
                     ),
                   ),
@@ -371,17 +368,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
           const SizedBox(height: 16),
 
-          Row(
-            children: _stats
-                .map(
-                  (stat) => Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: _buildStatTile(stat),
-                    ),
-                  ),
-                )
-                .toList(),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final double tileWidth = constraints.maxWidth < 380
+                  ? (constraints.maxWidth - 8) / 2
+                  : (constraints.maxWidth - 12) / 4;
+
+              return Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children: _stats
+                    .map(
+                      (stat) => SizedBox(
+                        width: tileWidth,
+                        child: _buildStatTile(stat),
+                      ),
+                    )
+                    .toList(),
+              );
+            },
           ),
         ],
       ),
@@ -454,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-//actions rapide
+  //actions rapide
 
   Widget _buildQuickActionsSection(BuildContext context) {
     return Column(
@@ -465,26 +470,35 @@ class _HomeScreenState extends State<HomeScreen> {
           'Actions rapides',
 
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 10,
             fontWeight: FontWeight.w500,
             color: AppColors.black,
           ),
         ),
 
-        const SizedBox(height: 12),
+        const SizedBox(height: 10),
 
-        Row(
-          children: List.generate(_quickActions.length, (index) {
-            return Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(
-                  right: index == _quickActions.length - 1 ? 0 : 8,
-                ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final bool useTwoColumns = constraints.maxWidth < 380;
+            final double spacing = 8;
+            final double cardWidth = useTwoColumns
+                ? (constraints.maxWidth - spacing) / 2
+                : (constraints.maxWidth - spacing * 3) / 4;
 
-                child: _buildQuickActionCard(context, _quickActions[index]),
-              ),
+            return Wrap(
+              spacing: spacing,
+              runSpacing: spacing,
+              children: _quickActions
+                  .map(
+                    (action) => SizedBox(
+                      width: cardWidth,
+                      child: _buildQuickActionCard(context, action),
+                    ),
+                  )
+                  .toList(),
             );
-          }),
+          },
         ),
       ],
     );
@@ -665,7 +679,6 @@ class _HomeScreenState extends State<HomeScreen> {
   // ACTIONS RAPIDES
   // ===========================================================
 
-
   Widget _buildQuickActionCard(BuildContext context, _QuickAction action) {
     return GestureDetector(
       onTap: () {
@@ -701,7 +714,8 @@ class _HomeScreenState extends State<HomeScreen> {
       },
 
       child: Container(
-        padding: const EdgeInsets.all(8),
+        height: 72,
+        padding: const EdgeInsets.all(5),
 
         decoration: BoxDecoration(
           color: AppColors.white,
@@ -722,7 +736,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(action.icon, size: 22, color: const Color(0xFF364153)),
 
-            const SizedBox(height: 8),
+            const SizedBox(height: 4),
 
             Text(
               action.label,
@@ -775,7 +789,6 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
 }
 
 // =============================================================

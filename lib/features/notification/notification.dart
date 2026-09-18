@@ -15,8 +15,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
   final List<NotificationItem> _notifications = [
     NotificationItem(
       title: 'Nouveau rapport disponible',
-      description:
-          'Le rapport hebdomadaire de la campagne « Promo Orange Money » est prêt.',
+      description: 'Le rapport hebdomadaire de la campagne « Promo Orange Money » est prêt.',
       date: '10:30',
       category: "AUJOURD'HUI",
       type: NotificationType.report,
@@ -35,8 +34,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     NotificationItem(
       title: 'Suggestion IA',
-      description:
-          'Kiyanza IA a une recommandation pour optimiser votre budget Facebook Ads.',
+      description: 'Kiyanza IA a une recommandation pour optimiser votre budget Facebook Ads.',
       date: 'Hier',
       category: 'HIER',
       type: NotificationType.ai,
@@ -46,8 +44,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     NotificationItem(
       title: 'Campagne en pause',
-      description:
-          'La campagne « Offre Spéciale Été » a été automatiquement mise en pause.',
+      description: 'La campagne « Offre Spéciale Été » a été automatiquement mise en pause.',
       date: '12 Mai',
       category: '12 MAI 2024',
       type: NotificationType.campaign,
@@ -56,8 +53,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
     NotificationItem(
       title: 'Mise à jour disponible',
-      description:
-          'De nouvelles fonctionnalités KIYANZA sont disponibles. Découvrez-les !',
+      description: 'De nouvelles fonctionnalités KIYANZA sont disponibles. Découvrez-les !',
       date: '12 Mai',
       category: '12 MAI 2024',
       type: NotificationType.update,
@@ -128,7 +124,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1.2)),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1.2),
+        ),
       ),
 
       child: Row(
@@ -196,49 +194,54 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 10),
 
-      child: Row(
-        children: List.generate(filters.length, (index) {
-          final bool selected = _selectedFilter == index;
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: List.generate(filters.length, (index) {
+            final bool selected = _selectedFilter == index;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
 
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  _selectedFilter = index;
-                });
-              },
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedFilter = index;
+                  });
+                },
 
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
 
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
-                  vertical: 6,
-                ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 6,
+                  ),
 
-                decoration: BoxDecoration(
-                  color: selected ? AppColors.green : const Color(0xFFF3F4F6),
-                  border: selected
-                      ? null
-                      : Border.all(color: const Color(0xFFE5E7EB)),
-                  borderRadius: BorderRadius.circular(100),
-                ),
+                  decoration: BoxDecoration(
+                    color: selected ? AppColors.green : const Color(0xFFF3F4F6),
+                    border: selected
+                        ? null
+                        : Border.all(color: const Color(0xFFE5E7EB)),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
 
-                child: Text(
-                  filters[index],
+                  child: Text(
+                    filters[index],
 
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: selected ? AppColors.white : const Color(0xFF374151),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: selected
+                          ? AppColors.white
+                          : const Color(0xFF374151),
+                    ),
                   ),
                 ),
               ),
-            ),
-          );
-        }),
+            );
+          }),
+        ),
       ),
     );
   }
@@ -305,7 +308,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
 
         decoration: const BoxDecoration(
-          border: Border(bottom: BorderSide(color: Color(0xFFF9FAFB), width: 1.2)),
+          border: Border(
+            bottom: BorderSide(color: Color(0xFFF9FAFB), width: 1.2),
+          ),
         ),
 
         child: Row(
@@ -421,7 +426,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
       case NotificationType.ai:
         // Sur la maquette, la notif IA affiche un badge bleu plein
         // avec l'initiale "K" (Kiyanza) plutôt qu'une icône générique.
-        bgColor =  AppColors.blue;
+        bgColor = AppColors.blue;
         child = const Text(
           'K',
           style: TextStyle(
@@ -443,11 +448,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
       case NotificationType.update:
         bgColor = const Color(0xFFF9FAFB);
-        child = const Icon(
-          Icons.restore,
-          size: 18,
-          color: Color(0xFF6B7280),
-        );
+        child = const Icon(Icons.restore, size: 18, color: Color(0xFF6B7280));
         break;
     }
 

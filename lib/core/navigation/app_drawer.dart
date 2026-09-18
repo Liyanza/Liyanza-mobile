@@ -30,8 +30,10 @@ class KiyanzaDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double drawerWidth = MediaQuery.sizeOf(context).width * 0.84;
+
     return Drawer(
-      width: 320,
+      width: drawerWidth.clamp(280.0, 320.0),
       backgroundColor: AppColors.white,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -170,7 +172,9 @@ class KiyanzaDrawer extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
 
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1.5)),
+        border: Border(
+          bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1.5),
+        ),
       ),
 
       child: Row(
@@ -271,7 +275,11 @@ class KiyanzaDrawer extends StatelessWidget {
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, size: 16, color: AppColors.gray400),
+              const Icon(
+                Icons.chevron_right,
+                size: 16,
+                color: AppColors.gray400,
+              ),
             ],
           ),
         ),

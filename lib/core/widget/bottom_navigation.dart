@@ -17,109 +17,108 @@ class KiyanzaBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 72,
+    return SafeArea(
+      top: false,
+      child: SizedBox(
+        height: 72,
 
-      child: Stack(
-        clipBehavior: Clip.none,
-        alignment: Alignment.topCenter,
+        child: Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topCenter,
 
-        children: [
-          // =====================================================
-          // BARRE BLANCHE
-          // =====================================================
+          children: [
+            // =====================================================
+            // BARRE BLANCHE
+            // =====================================================
 
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: 58,
-
-            child: Container(
-              decoration: BoxDecoration(
-                color: AppColors.white,
-
-                border: Border(
-                  top: BorderSide(color: AppColors.gray200, width: 0.8),
-                ),
-              ),
-
-              child: Row(
-                children: [
-                  _buildItem(
-                    index: 0,
-                    icon: Icons.home_outlined,
-                    activeIcon: Icons.home,
-                    label: 'Accueil',
-                  ),
-
-                  _buildItem(
-                    index: 1,
-                    icon: Icons.campaign_outlined,
-                    activeIcon: Icons.campaign,
-                    label: 'Campagnes',
-                  ),
-
-                  // ============================================
-                  // ESPACE POUR LE BOUTON CENTRAL
-                  // ============================================
-                  const SizedBox(width: 58),
-
-                  _buildItem(
-                    index: 2,
-                    icon: Icons.auto_awesome_outlined,
-                    activeIcon: Icons.auto_awesome,
-                    label: 'Recom...',
-                  ),
-
-                  _buildItem(
-                    index: 3,
-                    icon: Icons.search_outlined,
-                    activeIcon: Icons.search,
-                    label: 'Recherche',
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // =====================================================
-          // BOUTON CENTRAL
-          // =====================================================
-          Positioned(
-            top: -5,
-
-            child: GestureDetector(
-              onTap: onCenterButtonTap,
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: 58,
 
               child: Container(
-                width: 52,
-                height: 52,
-
                 decoration: BoxDecoration(
-                  color: AppColors.green,
-                  shape: BoxShape.circle,
+                  color: AppColors.white,
 
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.15),
-                      blurRadius: 8,
-                      offset: const Offset(0, 3),
+                  border: Border(
+                    top: BorderSide(color: AppColors.gray200, width: 0.8),
+                  ),
+                ),
+
+                child: Row(
+                  children: [
+                    _buildItem(
+                      index: 0,
+                      icon: Icons.home_outlined,
+                      activeIcon: Icons.home,
+                      label: 'Accueil',
+                    ),
+
+                    _buildItem(
+                      index: 1,
+                      icon: Icons.campaign_outlined,
+                      activeIcon: Icons.campaign,
+                      label: 'Campagnes',
+                    ),
+
+                    // ============================================
+                    // ESPACE POUR LE BOUTON CENTRAL
+                    // ============================================
+                    const SizedBox(width: 58),
+
+                    _buildItem(
+                      index: 2,
+                      icon: Icons.auto_awesome_outlined,
+                      activeIcon: Icons.auto_awesome,
+                      label: 'Recom...',
+                    ),
+
+                    _buildItem(
+                      index: 3,
+                      icon: Icons.search_outlined,
+                      activeIcon: Icons.search,
+                      label: 'Recherche',
                     ),
                   ],
                 ),
+              ),
+            ),
 
-                child: const Center(
-                  child: Icon(
-                    Icons.add,
-                    color: AppColors.white,
-                    size: 26,
+            // =====================================================
+            // BOUTON CENTRAL
+            // =====================================================
+            Positioned(
+              top: -5,
+
+              child: GestureDetector(
+                onTap: onCenterButtonTap,
+
+                child: Container(
+                  width: 52,
+                  height: 52,
+
+                  decoration: BoxDecoration(
+                    color: AppColors.green,
+                    shape: BoxShape.circle,
+
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 8,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+
+                  child: const Center(
+                    child: Icon(Icons.add, color: AppColors.white, size: 26),
                   ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -151,12 +150,12 @@ class KiyanzaBottomNavigation extends StatelessWidget {
             Icon(
               isSelected ? activeIcon : icon,
 
-              size: 21,
+              size: 24,
 
               color: isSelected ? AppColors.green : AppColors.gray600,
             ),
 
-            const SizedBox(height: 3),
+            const SizedBox(height: 5),
 
             Text(
               label,
