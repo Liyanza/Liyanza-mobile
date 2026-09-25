@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
+import '../data/models/campagnes/campagne_models.dart'; // CampaignType
 import 'campaign_objective_screen.dart';
 import '../campagne_radio/radio_station_screen.dart';
 import 'campaign_step_dots.dart';
@@ -9,29 +10,30 @@ import 'campaign_step_dots.dart';
 class CampaignTypeScreen extends StatelessWidget {
   const CampaignTypeScreen({super.key});
 
-  // ===========================================================
-  // DATA
-  // ===========================================================
-
   static final List<_CampaignTypeOption> _types = [
     _CampaignTypeOption(
       icon: Icons.desktop_windows_outlined,
       title: 'Campagne Digitale',
       description: 'Facebook, Instagram, Google Ads & Email',
-      destinationBuilder: (context) => const CampaignObjectiveScreen(),
+      destinationBuilder: (context) =>
+          const CampaignObjectiveScreen(type: CampaignType.digital),
     ),
     _CampaignTypeOption(
       icon: Icons.radio_outlined,
       title: 'Campagne Radio',
       description: 'Diffusion sur les radios locales et nationales',
+      // Flux Radio non branché sur POST /campagnes (voir l'intro de ce
+      // guide) — laissé tel quel, inchangé.
       destinationBuilder: (context) => const RadioStationScreen(),
     ),
     _CampaignTypeOption(
       icon: Icons.desktop_windows_outlined,
       title: 'Supports Publicitaires',
       description: 'Affiches, bâches, roll-ups, street marketing',
-      // TODO: pas encore maquetté dans Figma — brancher l'écran une fois prêt
-      destinationBuilder: (context) => const CampaignObjectiveScreen(),
+      // TODO: pas encore maquetté dans Figma au-delà de cet écran — mais
+      // rien n'empêche déjà de créer une campagne POSTER via POST /campagnes.
+      destinationBuilder: (context) =>
+          const CampaignObjectiveScreen(type: CampaignType.poster),
     ),
   ];
 
@@ -52,7 +54,8 @@ class CampaignTypeScreen extends StatelessWidget {
             // STEP DOTS
             // =================================================
 
-            const CampaignStepDots(currentStep: 0),
+            // APRÈS
+const CampaignStepDots(currentStep: 0, totalSteps: 3),
 
 
             // =================================================
@@ -167,7 +170,7 @@ class CampaignTypeScreen extends StatelessWidget {
 
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.06),
+              color: Colors.black.withValues(alpha: 0.06),
               blurRadius: 6,
               offset: const Offset(0, 2),
             ),

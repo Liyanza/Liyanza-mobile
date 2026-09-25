@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/kiyanza_colors.dart';
 import '../../campagnes/campaign_type_screen.dart';
-import '../../simulation/simulation.dart';
+import '../../simulation/scenario_details.dart';
 import '../../../monitoring_radio/monitoring.dart';
 
 // =================================================================
@@ -107,7 +107,7 @@ class _QuickActionsSheet extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const SimulationScreen()),
+                        MaterialPageRoute(builder: (_) => const ScenarioDetailsScreen()),
                       );
                     },
                   ),

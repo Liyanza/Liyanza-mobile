@@ -1,48 +1,50 @@
 import 'package:flutter/material.dart';
-
-import 'forgot_password.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/network/app_exceptions.dart';
+import '../../core/providers/auth_providers.dart';
 import '../../core/theme/kiyanza_colors.dart';
-import '../../../services_API/auth_service.dart';
+import 'forgot_password.dart';
+import '../../core/navigation/main_navigation.dart';
 
-class LoginScreen extends StatefulWidget {
+// La classe devient ConsumerStatefulWidget / ConsumerState au lieu de
+// StatefulWidget / State :
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
-
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final AuthService _authService = AuthService();
   bool _isLoading = false;
-
   bool _rememberMe = false;
   bool _obscurePassword = true;
-  
 
   Future<void> _handleLogin() async {
     setState(() => _isLoading = true);
-
-    final success = await _authService.login(
-      _emailController.text.trim(),
-      _passwordController.text,
-    );
-
-    setState(() => _isLoading = false);
-
-    if (mounted) {
-      if (success) {
-        // Rediriger vers l'accueil ou le menu principal
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Identifiants invalides ou serveur indisponible')),
+    try {
+      await ref.read(authNotifierProvider.notifier).login(
+            _emailController.text.trim(),
+            _passwordController.text,
+          );
+      if (mounted) {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (_) => const MainNavigationScreen(),
+          ),
         );
       }
+    } on AppException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     // =========================
@@ -123,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontFamily: 'Montserrat',
                       fontSize: s(16),
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withValues(alpha: 0.92),
+                      color: Colors.white.withOpacity(0.92),
                     ),
                   ),
 
@@ -336,41 +338,52 @@ class _LoginScreenState extends State<LoginScreen> {
                                         child: ElevatedButton(
                                           onPressed:
                                               _isLoading ? null : _handleLogin,
-                                          style: ElevatedButton.styleFrom(
-                                            padding: EdgeInsets.zero,
-                                            backgroundColor: AppColors.green,
-                                            shadowColor: Colors.transparent,
-                                            foregroundColor: Colors.white,
-                                            elevation: 0,
-                                            shape: RoundedRectangleBorder(
+                                          style:
+                                              ElevatedButton.styleFrom(
+                                                padding: EdgeInsets.zero,
+                                                backgroundColor:
+                                                    Colors.transparent,
+                                                shadowColor: Colors.transparent,
+                                                foregroundColor: Colors.white,
+                                                elevation: 0,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(
+                                                        s(100),
+                                                      ),
+                                                ),
+                                              ).copyWith(
+                                                backgroundColor:
+                                                    WidgetStateProperty.all(
+                                                      Colors.transparent,
+                                                    ),
+                                              ),
+                                          child: Ink(
+                                            decoration: BoxDecoration(
+                                              gradient: const LinearGradient(
+                                                begin: Alignment.centerLeft,
+                                                end: Alignment.centerRight,
+                                                colors: [
+                                                  AppColors.green,
+                                                  Color(0xFF1BB14A),
+                                                ],
+                                              ),
                                               borderRadius:
                                                   BorderRadius.circular(s(100)),
                                             ),
-                                          ),
-                                          child: _isLoading
-                                              ? const SizedBox(
-                                                  width: 20,
-                                                  height: 20,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                        strokeWidth: 2,
-                                                        valueColor:
-                                                            AlwaysStoppedAnimation<
-                                                                Color>(
-                                                          Colors.white,
-                                                        ),
-                                                      ),
-                                                )
-                                              : Text(
-                                                  'Se connecter',
-                                                  style: TextStyle(
-                                                    fontFamily: 'Poppins',
-                                                    fontWeight:
-                                                        FontWeight.w600,
-                                                    fontSize: s(16),
-                                                    color: Colors.white,
-                                                  ),
+                                            child: Container(
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                'Se connecter',
+                                                style: TextStyle(
+                                                  fontFamily: 'Poppins',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: s(16),
+                                                  color: Colors.white,
                                                 ),
+                                              ),
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ],

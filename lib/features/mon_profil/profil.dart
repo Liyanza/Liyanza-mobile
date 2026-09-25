@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme/kiyanza_colors.dart';
+import '../../core/providers/auth_providers.dart';
+import '../authentification/login_screen.dart';
 
 import 'company_screen.dart';
 import 'personal_Info_screen.dart';
 import 'preferences_screen.dart';
 import 'security_screen.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       backgroundColor: AppColors.white,
 
@@ -136,7 +139,7 @@ class ProfileScreen extends StatelessWidget {
 
                     const SizedBox(height: 12),
 
-                    _buildLogoutButton(),
+                    _buildLogoutButton(context, ref),
                   ],
                 ),
               ),
@@ -404,7 +407,7 @@ class ProfileScreen extends StatelessWidget {
   // LOGOUT
   // ===========================================================
 
-  Widget _buildLogoutButton() {
+  Widget _buildLogoutButton(BuildContext context, WidgetRef ref) {
     return Container(
       width: double.infinity,
       height: 52,
@@ -414,15 +417,33 @@ class ProfileScreen extends StatelessWidget {
 
         border: Border.all(color: const Color(0xFFFECACA)),
       ),
-
-      child: const Center(
-        child: Text(
-          'Se déconnecter',
-
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: Color(0xFFDC2626),
+      child: ElevatedButton(
+        onPressed: () async {
+          await ref.read(authNotifierProvider.notifier).logout();
+          if (context.mounted) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              (route) => false,
+            );
+          }
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          foregroundColor: const Color(0xFFDC2626),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+        ),
+        child: const Center(
+          child: Text(
+            'Se déconnecter',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFFDC2626),
+            ),
           ),
         ),
       ),

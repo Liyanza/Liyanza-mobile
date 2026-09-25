@@ -1,9 +1,42 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../onboarding/presentation/onboarding.dart';
+import '../../../core/providers/auth_providers.dart';
+import '../../../core/navigation/main_navigation.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
+  @override
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends ConsumerState<SplashScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Laisse le temps à AuthNotifier de terminer sa vérification initiale
+    // (lecture du secure storage) avant de décider où naviguer.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _redirectWhenReady());
+  }
+
+  Future<void> _redirectWhenReady() async {
+    // Attend que le statut ne soit plus "checking" (poll simple, le
+    // AuthNotifier termine sa vérification en quelques millisecondes —
+    // lecture locale du secure storage, pas d'appel réseau).
+    while (ref.read(authNotifierProvider).status == AuthStatus.checking) {
+      await Future.delayed(const Duration(milliseconds: 50));
+    }
+    if (!mounted) return;
+
+    final status = ref.read(authNotifierProvider).status;
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(
+        builder: (_) => status == AuthStatus.authenticated
+        ? const MainNavigationScreen()
+            : const OnboardingScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +50,7 @@ class SplashScreen extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              const SizedBox(height: 10),
+              const SizedBox(height: 30),
               SizedBox(
                 width: logoSize,
                 height: logoSize,
@@ -87,7 +120,7 @@ class SplashScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 30),
             ],
           ),
         ),
