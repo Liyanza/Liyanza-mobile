@@ -1,49 +1,108 @@
+// APRÈS
 import 'package:flutter/material.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/kiyanza_colors.dart';
+import '../core/network/app_exceptions.dart';
+import '../core/providers/assistant_ia_providers.dart';
+import '../core/providers/auth_providers.dart';
+import '../core/storage/local_conversation_store.dart';
+import '../data/models/assistant_ia/assistant_ia_models.dart';
 import 'conversation_history.dart';
 
-class KiyanzaAiScreen extends StatefulWidget {
-  const KiyanzaAiScreen({super.key});
+class KiyanzaAiScreen extends ConsumerStatefulWidget {
+  // Fourni par ConversationHistoryScreen pour rouvrir une conversation
+  // existante ; laissé null pour démarrer une nouvelle conversation.
+  final String? conversationId;
+
+  const KiyanzaAiScreen({super.key, this.conversationId});
 
   @override
-  State<KiyanzaAiScreen> createState() => _KiyanzaAiScreenState();
+  ConsumerState<KiyanzaAiScreen> createState() => _KiyanzaAiScreenState();
 }
 
-class _KiyanzaAiScreenState extends State<KiyanzaAiScreen> {
+class _KiyanzaAiScreenState extends ConsumerState<KiyanzaAiScreen> {
   final TextEditingController _messageController = TextEditingController();
-
   final List<_Message> _messages = [];
+  final _localStore = LocalConversationStore();
+
+  String? _conversationId;
+  bool _isSending = false;
+  bool _isLoadingHistory = false;
 
   @override
-  void dispose() {
-    _messageController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _conversationId = widget.conversationId;
+    if (_conversationId != null) _loadExistingConversation(_conversationId!);
   }
 
-  void _sendMessage() {
+  Future<void> _loadExistingConversation(String id) async {
+    setState(() => _isLoadingHistory = true);
+    try {
+      final conversation = await ref.read(assistantIaRepositoryProvider).getConversation(id);
+      setState(() {
+        _messages.addAll(conversation.messages.map(
+          (m) => _Message(text: m.content, isUser: m.sender == MessageSender.user),
+        ));
+      });
+    } on AppException catch (e) {
+      if (mounted) _showSnack(e.message);
+    } finally {
+      if (mounted) setState(() => _isLoadingHistory = false);
+    }
+  }
+
+  void _showSnack(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
+    if (text.isEmpty || _isSending) return;
+    // Aligné sur @MaxLength(5000) de EnvoyerMessageDto — évite un
+    // aller-retour réseau pour un cas que le serveur rejettera de toute façon.
+    if (text.length > 5000) {
+      _showSnack('Message trop long (5000 caractères maximum).');
+      return;
+    }
 
-    if (text.isEmpty) return;
-
+    _messageController.clear();
     setState(() {
+      _isSending = true;
       _messages.add(_Message(text: text, isUser: true));
     });
 
-    _messageController.clear();
+    try {
+      var conversationId = _conversationId;
+      if (conversationId == null) {
+        // Première prise de parole : on crée la conversation à la volée. Le
+        // topic exigé par CreateConversationDto est dérivé du premier
+        // message (tronqué), faute d'un vrai champ "sujet" dans cette UI.
+        final topic = text.length > 80 ? '${text.substring(0, 80)}…' : text;
+        final conversation = await ref.read(assistantIaRepositoryProvider).createConversation(topic);
+        conversationId = conversation.id;
+        await _localStore.add(LocalConversationEntry(
+          id: conversation.id,
+          topic: topic,
+          startedAt: conversation.startedAt,
+        ));
+      }
 
-    Future.delayed(const Duration(milliseconds: 600), () {
-      if (!mounted) return;
-
+      final result = await ref.read(assistantIaRepositoryProvider).sendMessage(conversationId, text);
+      _conversationId = conversationId;
       setState(() {
-        _messages.add(
-          _Message(
-            text: 'Voici une analyse basée sur les données disponibles.',
-            isUser: false,
-          ),
-        );
+        _messages.add(_Message(text: result.iaMessage.content, isUser: false));
       });
-    });
+    } on AppException catch (e) {
+      // Le message d'erreur reste DANS le fil de discussion plutôt qu'en
+      // SnackBar : plus cohérent avec l'UX d'un chat, et ça laisse une trace
+      // visible si l'utilisateur retente juste après.
+      setState(() {
+        _messages.add(_Message(text: '⚠️ ${e.message}', isUser: false));
+      });
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
   }
 
   @override

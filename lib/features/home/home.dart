@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-
+import '../../IA/kiyanza_ia.dart';
 import '../../core/theme/kiyanza_colors.dart';
 //import '../../core/theme/kiyanza_sizes.dart';
-import '../../IA/ia_report_analyse.dart';
+//import '../../IA/ia_report_analyse.dart';
 import '../../simulation/recommendation.dart';
 import '../../campagnes/campagne.dart';
 import '../../../monitoring_radio/monitoring.dart';
@@ -63,6 +63,8 @@ class _HomeScreenState extends State<HomeScreen> {
       growth: '↗ 12%',
     ),
   ];
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -760,13 +762,13 @@ class _HomeScreenState extends State<HomeScreen> {
   // ===========================================================
 
   Widget _buildAiFloatingButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const AiReportAnalysisScreen()),
-        );
-      },
+  return GestureDetector(
+    onTap: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const KiyanzaAiScreen()),
+      );
+    },
 
       child: Container(
         width: 48,
