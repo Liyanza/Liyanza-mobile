@@ -13,11 +13,11 @@ class EnvConfig {
       case AppEnv.simulatorIOS:
         // Le simulateur iOS partage le réseau de la machine hôte :
         // localhost fonctionne directement, pas d'alias nécessaire.
-        return const EnvConfig._('http://localhost:3000');
+        return const EnvConfig._('https://liyanza-backend.onrender.com');
       case AppEnv.physicalDevice:
         // Téléphone physique sur le MÊME réseau Wi-Fi que la machine de dev.
         // Remplacer par l'IP LAN réelle de la machine (ipconfig/ifconfig).
-        return const EnvConfig._('http://192.168.100.218:3000');
+        return const EnvConfig._('https://liyanza-backend.onrender.com');
       case AppEnv.production:
         return const EnvConfig._('https://liyanza-backend.onrender.com');
     }

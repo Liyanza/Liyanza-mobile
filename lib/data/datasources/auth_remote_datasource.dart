@@ -12,8 +12,8 @@ class AuthRemoteDatasource {
   AuthRemoteDatasource(String baseUrl)
       : _dio = Dio(BaseOptions(
           baseUrl: baseUrl,
-          connectTimeout: const Duration(minutes: 5),
-          receiveTimeout: const Duration(minutes: 5),
+          connectTimeout: const Duration(minutes: 30),
+          receiveTimeout: const Duration(minutes: 30),
           headers: {'Content-Type': 'application/json'},
         ));
 

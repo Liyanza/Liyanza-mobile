@@ -247,7 +247,7 @@ Widget build(BuildContext context) {
             // MENU
             // ===================================================
             ListTile(
-              leading: const Icon(Icons.grid_view_outlined),
+              leading: const Icon(Icons.menu_open_rounded),
               title: const Text('Menu'),
 
               onTap: () {
