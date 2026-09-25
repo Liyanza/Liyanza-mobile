@@ -1,117 +1,96 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../core/providers/campagne_providers.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
+import '../../data/models/campagnes/campagne_models.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
 import 'campagne_detail.dart';
 import 'campaign_type_screen.dart';
 
-class CampaignsScreen extends StatefulWidget {
+class CampaignsScreen extends ConsumerStatefulWidget {
   final VoidCallback onOpenMenu;
-
   const CampaignsScreen({super.key, required this.onOpenMenu});
-
   @override
-  State<CampaignsScreen> createState() => _CampaignsScreenState();
+  ConsumerState<CampaignsScreen> createState() => _CampaignsScreenState();
 }
-
-class _CampaignsScreenState extends State<CampaignsScreen> {
+class _CampaignsScreenState extends ConsumerState<CampaignsScreen> {
   int _selectedFilter = 1;
 
-  final List<CampaignItem> _campaigns = [
-    CampaignItem(
-      title: 'Promo Orange Money',
-      platform: 'Facebook',
-      budget: 'Budget: 100 000 FCFA',
-      performance: 68,
-      status: 'Active',
-      icon: Icons.facebook,
-      iconColor: AppColors.blue,
-    ),
-    CampaignItem(
-      title: 'Lancement Fibre',
-      platform: 'TikTok',
-      budget: 'Budget: 150 000 FCFA',
-      performance: 72,
-      status: 'Active',
-      icon: Icons.music_note,
-      iconColor: AppColors.black,
-    ),
-  ];
+ 
 
   // ===========================================================
   // FILTRAGE
   // ===========================================================
 
-  List<CampaignItem> get _filteredCampaigns {
-    if (_selectedFilter == 1) {
-      return _campaigns
-          .where((campaign) => campaign.status == 'Active')
-          .toList();
-    }
-
-    if (_selectedFilter == 2) {
-      return _campaigns
-          .where((campaign) => campaign.status == 'Brouillon')
-          .toList();
-    }
-
-    if (_selectedFilter == 3) {
-      return _campaigns
-          .where((campaign) => campaign.status == 'Terminée')
-          .toList();
-    }
-
-    return _campaigns;
+  // APRÈS
+List<CampaignItem> _filteredCampaigns(List<CampaignItem> campaigns) {
+  if (_selectedFilter == 1) {
+    return campaigns.where((c) => c.status == 'Active').toList();
   }
+  if (_selectedFilter == 2) {
+    return campaigns.where((c) => c.status == 'Brouillon').toList();
+  }
+  if (_selectedFilter == 3) {
+    return campaigns.where((c) => c.status == 'Terminée').toList();
+  }
+  return campaigns;
+}
 
   // ===========================================================
   // BUILD
   // ===========================================================
 
-  @override
-  Widget build(BuildContext context) {
-    final campaigns = _filteredCampaigns;
+  // APRÈS
+@override
+Widget build(BuildContext context) {
+  final campagnesState = ref.watch(campagnesNotifierProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-
-      // =========================================================
-      // DRAWER
-      // =========================================================
-      drawer: _buildDrawer(context),
-
-      body: SafeArea(
-        child: Column(
-          children: [
-            // HEADER
-            _buildHeader(context),
-
-            // RECHERCHE
-            _buildSearchBar(),
-
-            // FILTRES
-            _buildFilters(),
-
-            // LISTE
-            Expanded(
-              child: campaigns.isEmpty
-                  ? _buildEmptyState()
-                  : _buildCampaignList(campaigns),
-            ),
-
-            // BOUTON NOUVELLE CAMPAGNE
-            _buildNewCampaignButton(),
-          ],
-        ),
+  Widget body;
+  if (campagnesState.status == CampagnesStatus.loading || campagnesState.status == CampagnesStatus.initial) {
+    body = const Center(child: CircularProgressIndicator());
+  } else if (campagnesState.status == CampagnesStatus.error) {
+    body = Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(campagnesState.errorMessage ?? 'Erreur inconnue',
+              style: const TextStyle(color: AppColors.gray500), textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          TextButton(
+            onPressed: () => ref.read(campagnesNotifierProvider.notifier).refresh(),
+            child: const Text('Réessayer'),
+          ),
+        ],
       ),
-
-      // IMPORTANT :
-      // PAS DE bottomNavigationBar ICI.
-      //
-      // La Bottom Navigation est déjà gérée par
-      // MainNavigationScreen.
     );
+  } else {
+    final items = campagnesState.items.map(CampaignItem.fromApi).toList();
+    final campaigns = _filteredCampaigns(items);
+    body = campaigns.isEmpty
+        ? _buildEmptyState()
+        : RefreshIndicator(
+            onRefresh: () => ref.read(campagnesNotifierProvider.notifier).refresh(),
+            child: _buildCampaignList(campaigns),
+          );
   }
+
+  return Scaffold(
+    backgroundColor: AppColors.white,
+    drawer: _buildDrawer(context),
+    body: SafeArea(
+      child: Column(
+        children: [
+          _buildHeader(context),
+          _buildSearchBar(),
+          _buildFilters(),
+          Expanded(child: body),
+          _buildNewCampaignButton(),
+        ],
+      ),
+    ),
+  );
+}
 
   // ===========================================================
   // HEADER
@@ -849,9 +828,10 @@ class _CampaignsScreenState extends State<CampaignsScreen> {
 // MODEL
 // =============================================================
 
+// APRÈS
 class CampaignItem {
+  final String? id;
   final String title;
-
   final String platform;
   final String budget;
   final int performance;
@@ -860,6 +840,7 @@ class CampaignItem {
   final Color iconColor;
 
   CampaignItem({
+    this.id,
     required this.title,
     required this.platform,
     required this.budget,
@@ -868,4 +849,35 @@ class CampaignItem {
     required this.icon,
     required this.iconColor,
   });
+
+  factory CampaignItem.fromApi(CampagneModel m) {
+    final (icon, color) = switch (m.type) {
+      CampaignType.digital => (Icons.desktop_windows_outlined, AppColors.blue),
+      CampaignType.radio => (Icons.radio_outlined, AppColors.orange),
+      CampaignType.poster => (Icons.campaign_outlined, AppColors.green),
+    };
+    return CampaignItem(
+      id: m.id,
+      title: m.name,
+      platform: campaignTypeLabel(m.type),
+      budget: 'Budget : ${_formatBudget(m.plannedBudget)} FCFA',
+      // L'API ne renvoie aucun indicateur de performance pour l'instant —
+      // ce champ n'est pas exploité par cet écran (seule campagne_detail.dart
+      // l'affiche, avec des données toujours mockées, voir fin de guide).
+      performance: 0,
+      status: campaignStatusLabel(m.status),
+      icon: icon,
+      iconColor: color,
+    );
+  }
+}
+
+String _formatBudget(double value) {
+  final str = value.toStringAsFixed(0);
+  final buffer = StringBuffer();
+  for (int i = 0; i < str.length; i++) {
+    if (i != 0 && (str.length - i) % 3 == 0) buffer.write(' ');
+    buffer.write(str[i]);
+  }
+  return buffer.toString();
 }

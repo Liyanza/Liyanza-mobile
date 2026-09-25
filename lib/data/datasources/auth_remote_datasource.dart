@@ -12,8 +12,8 @@ class AuthRemoteDatasource {
   AuthRemoteDatasource(String baseUrl)
       : _dio = Dio(BaseOptions(
           baseUrl: baseUrl,
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 30),
+          connectTimeout: const Duration(minutes: 5),
+          receiveTimeout: const Duration(minutes: 5),
           headers: {'Content-Type': 'application/json'},
         ));
 
@@ -88,7 +88,7 @@ class AuthRemoteDatasource {
     if (e.type == DioExceptionType.connectionError ||
         e.type == DioExceptionType.connectionTimeout ||
         e.type == DioExceptionType.receiveTimeout) {
-      return const NoInternetException();
+      return const ServerUnavailableException();
     }
 
     final status = e.response?.statusCode;

@@ -28,6 +28,12 @@ class NoInternetException extends AppException {
   const NoInternetException([super.message = 'Pas de connexion internet.']);
 }
 
+class ServerUnavailableException extends AppException {
+  const ServerUnavailableException([
+    super.message = 'Serveur inaccessible. Réessayez dans quelques instants.',
+  ]);
+}
+
 class UnknownServerException extends AppException {
   const UnknownServerException([super.message = 'Erreur serveur, réessayez plus tard.']);
 }

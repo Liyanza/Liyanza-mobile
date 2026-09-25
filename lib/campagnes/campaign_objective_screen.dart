@@ -270,7 +270,10 @@ class _CampaignObjectiveScreenState extends State<CampaignObjectiveScreen> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => const CampaignAudienceScreen(),
+                builder: (_) => CampaignAudienceScreen(
+                  type: widget.type,
+                  objective: _objectives[_selectedIndex].title,
+                ),
               ),
             );
           },

@@ -125,7 +125,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       fontFamily: 'Montserrat',
                       fontSize: s(16),
                       fontWeight: FontWeight.w600,
-                      color: Colors.white.withOpacity(0.92),
+                      color: Colors.white.withValues(alpha: 0.92),
                     ),
                   ),
 
@@ -252,6 +252,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         height: h(46),
                                         radius: s(10),
                                         fontSize: s(16),
+                                        keyboardType:
+                                          TextInputType.visiblePassword,
                                         obscureText: _obscurePassword,
                                         suffix: IconButton(
                                           padding: EdgeInsets.zero,
@@ -577,7 +579,12 @@ class _AuthField extends StatelessWidget {
       child: TextField(
         controller: controller,
         obscureText: obscureText,
-        keyboardType: keyboardType,
+        keyboardType: keyboardType ?? TextInputType.text,
+        textCapitalization: hint == 'Email'
+          ? TextCapitalization.none
+          : TextCapitalization.sentences,
+        autocorrect: false,
+        enableSuggestions: !obscureText,
         style: TextStyle(
           fontFamily: 'Poppins',
           fontSize: fontSize,

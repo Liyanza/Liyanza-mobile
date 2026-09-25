@@ -7,9 +7,9 @@ class EnvConfig {
   static EnvConfig forEnv(AppEnv env) {
     switch (env) {
       case AppEnv.emulatorAndroid:
-        // 10.0.2.2 = alias spécial de l'émulateur Android vers le localhost
-        // de la machine hôte. Ne fonctionne QUE sur émulateur Android.
-        return const EnvConfig._('http://10.0.2.2:3000');
+        // L'API de développement locale n'est pas disponible dans cette
+        // application ; l'émulateur utilise donc l'API distante.
+        return const EnvConfig._('https://liyanza-backend.onrender.com');
       case AppEnv.simulatorIOS:
         // Le simulateur iOS partage le réseau de la machine hôte :
         // localhost fonctionne directement, pas d'alias nécessaire.
@@ -28,9 +28,9 @@ class EnvConfig {
 //   flutter run --dart-define=APP_ENV=emulatorAndroid
 //   flutter run --dart-define=APP_ENV=physicalDevice
 //   flutter build apk --dart-define=APP_ENV=production
-const _envName = String.fromEnvironment('APP_ENV', defaultValue: 'emulatorAndroid');
+const _envName = String.fromEnvironment('APP_ENV', defaultValue: 'production');
 final AppEnv currentEnv = AppEnv.values.firstWhere(
   (e) => e.name == _envName,
-  orElse: () => AppEnv.emulatorAndroid,
+  orElse: () => AppEnv.production,
 );
 final EnvConfig envConfig = EnvConfig.forEnv(currentEnv);

@@ -1,24 +1,33 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
+import '../core/network/app_exceptions.dart';
+import '../core/providers/campagne_providers.dart';
+import '../data/models/campagnes/campagne_models.dart';
 import 'campaign_step_dots.dart';
-import 'channels_screen.dart';
 
-class BudgetScreen extends StatefulWidget {
-  const BudgetScreen({super.key});
+class BudgetScreen extends ConsumerStatefulWidget {
+  final CampaignType type;
+  final String objective;
 
+  const BudgetScreen({super.key, required this.type, required this.objective});
   @override
-  State<BudgetScreen> createState() => _BudgetScreenState();
+  ConsumerState<BudgetScreen> createState() => _BudgetScreenState();
 }
 
-class _BudgetScreenState extends State<BudgetScreen> {
+class _BudgetScreenState extends ConsumerState<BudgetScreen> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _budgetController = TextEditingController(
     text: '100 000',
   );
 
   int _selectedPresetIndex = 1; // '100K' sélectionné par défaut
   String _duration = '7 jours';
+ bool _isSaving = false;
 
   final List<_BudgetPreset> _presets = [
     _BudgetPreset(label: '50K', amount: '50 000'),
@@ -27,20 +36,26 @@ class _BudgetScreenState extends State<BudgetScreen> {
     _BudgetPreset(label: '500K', amount: '500 000'),
   ];
 
-  @override
-  void dispose() {
-    _budgetController.dispose();
-    super.dispose();
-  }
+// APRÈS
+@override
+void dispose() {
+  _nameController.dispose();
+  _budgetController.dispose();
+  super.dispose();
+}
 
   // ===========================================================
   // ESTIMATION (proportionnelle au budget saisi, base 100K)
   // ===========================================================
 
-  int get _budgetValue {
-    final raw = _budgetController.text.replaceAll(RegExp(r'[^0-9]'), '');
-    return int.tryParse(raw) ?? 100000;
+    int get _durationDays {
+    final match = RegExp(r'\d+').firstMatch(_duration);
+    return match != null ? int.parse(match.group(0)!) : 7;
   }
+  int get _budgetValue {
+  final raw = _budgetController.text.replaceAll(RegExp(r'[^0-9]'), '');
+  return int.tryParse(raw) ?? 100000;
+}
 
   String get _estimatedReach {
     final factor = _budgetValue / 100000;
@@ -128,7 +143,8 @@ class _BudgetScreenState extends State<BudgetScreen> {
             // =================================================
             // STEP DOTS
             // =================================================
-            const CampaignStepDots(currentStep: 3),
+            // APRÈS
+const CampaignStepDots(currentStep: 3, totalSteps: 5),
 
             // =================================================
             // CONTENU
@@ -137,23 +153,30 @@ class _BudgetScreenState extends State<BudgetScreen> {
               child: SingleChildScrollView(
                 padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
 
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                // APRÈS
+child: Column(
+  crossAxisAlignment: CrossAxisAlignment.start,
 
-                  children: [
-                    const Text(
-                      'Quel est votre budget ?',
+  children: [
+    const Text(
+      'Quel est votre budget ?',
 
-                      style: TextStyle(
-                        fontSize: 19,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.black,
-                      ),
-                    ),
+      style: TextStyle(
+        fontSize: 19,
+        fontWeight: FontWeight.w700,
+        color: AppColors.black,
+      ),
+    ),
 
-                    const SizedBox(height: 20),
+    const SizedBox(height: 20),
 
-                    _buildFieldLabel('Budget total'),
+    _buildFieldLabel('Nom de la campagne'),
+    const SizedBox(height: 8),
+    _buildNameInput(),
+
+    const SizedBox(height: 20),
+
+    _buildFieldLabel('Budget total'),
                     const SizedBox(height: 8),
                     _buildBudgetInput(),
 
@@ -238,6 +261,26 @@ class _BudgetScreenState extends State<BudgetScreen> {
       style: const TextStyle(fontSize: 12, color: AppColors.gray400),
     );
   }
+
+  Widget _buildNameInput() {
+  return Container(
+    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16),
+      border: Border.all(color: const Color(0xFFE5E7EB), width: 1.2),
+    ),
+
+    child: TextField(
+      controller: _nameController,
+      decoration: const InputDecoration(
+        hintText: 'ex : Promo Orange Money',
+        border: InputBorder.none,
+        isDense: true,
+      ),
+    ),
+  );
+}
 
   // ===========================================================
   // CHAMP BUDGET (montant en grand)
@@ -486,45 +529,95 @@ class _BudgetScreenState extends State<BudgetScreen> {
   // BOUTON CONTINUER
   // ===========================================================
 
-  Widget _buildContinueButton(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+  // APRÈS
+Widget _buildContinueButton(BuildContext context) {
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
 
-      child: SizedBox(
-        width: double.infinity,
-        height: 54,
+    child: SizedBox(
+      width: double.infinity,
+      height: 54,
 
-        child: ElevatedButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ChannelsScreen()),
-            );
-          },
+      child: ElevatedButton(
+        onPressed: _isSaving ? null : _handleCreate,
 
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.green,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.green,
 
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-            ),
-
-            elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
           ),
 
-          child: const Text(
-            'Continuer',
-
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.white,
-            ),
-          ),
+          elevation: 0,
         ),
+
+        child: _isSaving
+            ? const SizedBox(
+                width: 22,
+                height: 22,
+                child: CircularProgressIndicator(strokeWidth: 2.4, color: AppColors.white),
+              )
+            : const Text(
+                'Créer la campagne',
+
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.white,
+                ),
+              ),
       ),
+    ),
+  );
+}
+
+Future<void> _handleCreate() async {
+  final name = _nameController.text.trim();
+  if (name.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Le nom de la campagne est obligatoire.')),
     );
+    return;
   }
+
+  final startDate = DateTime.now();
+  final endDate = startDate.add(Duration(days: _durationDays));
+
+  setState(() => _isSaving = true);
+  try {
+    await ref.read(campagneRepositoryProvider).create(CreateCampagneRequest(
+          name: name,
+          startDate: startDate,
+          endDate: endDate,
+          plannedBudget: _budgetValue.toDouble(),
+          objective: widget.objective,
+          type: widget.type,
+        ));
+    // Rafraîchit la liste pour qu'elle affiche la nouvelle campagne dès le
+    // retour dessus (étape 7 de ce guide — campagnesNotifierProvider).
+    unawaited(ref.read(campagnesNotifierProvider.notifier).refresh());
+    if (mounted) {
+      // Dépile les 3 écrans du flux (Type → Objectif → Budget) d'un coup,
+      // pour revenir exactement là où "Nouvelle campagne" a été ouvert. Pas
+      // de route nommée dans ce flux, donc pas de raccourci plus propre que
+      // ces 3 pops explicites — le nombre est fixe car ce guide n'ouvre
+      // jamais ce flux autrement que Type → Objectif → Budget.
+      Navigator.of(context)
+        ..pop()
+        ..pop()
+        ..pop();
+    }
+  } on AppException catch (e) {
+    final message = e is ValidationFailedException && e.details.isNotEmpty
+        ? e.details.join('\n')
+        : e.message;
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    }
+  } finally {
+    if (mounted) setState(() => _isSaving = false);
+  }
+}
 }
 
 // =============================================================

@@ -55,7 +55,7 @@ class CampaignTypeScreen extends StatelessWidget {
             // =================================================
 
             // APRÈS
-const CampaignStepDots(currentStep: 0, totalSteps: 3),
+const CampaignStepDots(currentStep: 0, totalSteps: 5),
 
 
             // =================================================
