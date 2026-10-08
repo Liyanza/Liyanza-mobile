@@ -591,7 +591,9 @@ class _AiRecommendationCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const RecommendationsScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => RecommendationsScreen(initialCampaignId: campaign!.id),
+                  ),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF2563EB),

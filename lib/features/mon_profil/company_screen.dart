@@ -1,275 +1,149 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/network/app_exceptions.dart';
+import '../../core/providers/account_providers.dart';
 import '../../core/theme/kiyanza_colors.dart';
+import '../../data/models/account/account_models.dart';
+import 'profil.dart';
 
-class CompanyScreen extends StatefulWidget {
-  const CompanyScreen({super.key});
+/// Fiche de l'entreprise : modifiable par son administrateur, en lecture
+/// seule pour les autres rôles.
+class CompanyScreen extends ConsumerStatefulWidget {
+  final CompanyModel company;
+  final bool canEdit;
+
+  const CompanyScreen({super.key, required this.company, required this.canEdit});
 
   @override
-  State<CompanyScreen> createState() => _CompanyScreenState();
+  ConsumerState<CompanyScreen> createState() => _CompanyScreenState();
 }
 
-class _CompanyScreenState extends State<CompanyScreen> {
-  bool isEditing = false;
+class _CompanyScreenState extends ConsumerState<CompanyScreen> {
+  final _formKey = GlobalKey<FormState>();
+  late final _name = TextEditingController(text: widget.company.name);
+  late final _sector = TextEditingController(text: widget.company.businessSector);
+  late final _address = TextEditingController(text: widget.company.address);
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _name.dispose();
+    _sector.dispose();
+    _address.dispose();
+    super.dispose();
+  }
+
+  Future<void> _save() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(accountRemoteDatasourceProvider).updateCompany(
+            widget.company.id,
+            name: _name.text.trim(),
+            businessSector: _sector.text.trim(),
+            address: _address.text.trim(),
+          );
+      ref.invalidate(accountProvider);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Entreprise mise à jour.')));
+      Navigator.pop(context);
+    } on AppException catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
+    String? required(String? value) =>
+        (value == null || value.trim().isEmpty) ? 'Champ obligatoire' : null;
+
     return Scaffold(
       backgroundColor: AppColors.white,
-
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(context),
-
+            const ProfileHeader(title: 'Mon entreprise'),
             Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 16, 16, 20),
-
-                child: Column(
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.all(16),
                   children: [
-                    _buildLogo(),
-
-                    const SizedBox(height: 8),
-
-                    const Text(
-                      'Logo de l’entreprise',
-
-                      style: TextStyle(fontSize: 10, color: AppColors.gray400),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    _buildCompanyCard(),
+                    _Field(label: "NOM DE L'ENTREPRISE", controller: _name, enabled: widget.canEdit, validator: required),
+                    _Field(label: "SECTEUR D'ACTIVITÉ", controller: _sector, enabled: widget.canEdit, validator: required),
+                    _Field(label: 'ADRESSE', controller: _address, enabled: widget.canEdit, validator: required),
+                    if (!widget.canEdit)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Text(
+                          "Seul l'administrateur de l'entreprise peut modifier ces informations.",
+                          style: TextStyle(fontSize: 11.5, color: AppColors.gray400),
+                        ),
+                      ),
                   ],
                 ),
               ),
             ),
+            if (widget.canEdit)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: _saving ? null : _save,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.green,
+                      foregroundColor: AppColors.white,
+                      shape: const StadiumBorder(),
+                      elevation: 0,
+                    ),
+                    child: _saving
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
+                        : const Text('Enregistrer', style: TextStyle(fontWeight: FontWeight.w600)),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
+}
 
-  // ===========================================================
-  // HEADER
-  // ===========================================================
+class _Field extends StatelessWidget {
+  final String label;
+  final TextEditingController controller;
+  final bool enabled;
+  final String? Function(String?) validator;
 
-  Widget _buildHeader(BuildContext context) {
-    return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+  const _Field({required this.label, required this.controller, required this.enabled, required this.validator});
 
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0xFFF1F1F1))),
-      ),
-
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-
-            child: const Icon(Icons.arrow_back_ios_new, size: 18),
-          ),
-
-          const SizedBox(width: 16),
-
-          const Text(
-            'Mon entreprise',
-
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================
-  // LOGO
-  // ===========================================================
-
-  Widget _buildLogo() {
-    return Container(
-      width: 64,
-      height: 64,
-
-      decoration: BoxDecoration(
-        color: AppColors.green,
-        borderRadius: BorderRadius.circular(18),
-      ),
-
-      child: const Center(
-        child: Text(
-          'BO',
-
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: AppColors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  // ===========================================================
-  // CARD
-  // ===========================================================
-
-  Widget _buildCompanyCard() {
-    return Container(
-      width: double.infinity,
-
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-
-        border: Border.all(color: const Color(0xFFE5E7EB)),
-      ),
-
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (isEditing) _buildEditActions(),
-
-          _buildField(label: 'NOM DE L’ENTREPRISE', value: 'Boutique Orange'),
-
-          _buildField(label: 'SECTEUR D’ACTIVITÉ', value: 'Télécommunications'),
-
-          _buildField(label: 'VILLE', value: 'Douala'),
-
-          _buildField(label: 'PAYS', value: 'Cameroun'),
-
-          _buildField(label: 'ADRESSE', value: 'Rue Joss, Akwa'),
-
-          _buildField(label: 'N° RCCM / SIREN', value: 'CM-2019-00456'),
-
-          _buildField(label: 'SITE WEB', value: 'orange.cm'),
-
-          _buildField(label: 'EFFECTIF', value: '51–200 employés'),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================
-  // FIELD
-  // ===========================================================
-
-  Widget _buildField({required String label, required String value}) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
-
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Text(
-                  label,
-
-                  style: const TextStyle(
-                    fontSize: 8,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.gray400,
-                    letterSpacing: 0.5,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                Text(
-                  value,
-
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.black,
-                  ),
-                ),
-              ],
-            ),
-          ),
-
-          GestureDetector(
-            onTap: () {
-              setState(() {
-                isEditing = true;
-              });
-            },
-
-            child: Container(
-              width: 30,
-              height: 30,
-
-              decoration: const BoxDecoration(
-                color: Color(0xFFF5F5F5),
-                shape: BoxShape.circle,
-              ),
-
-              child: const Icon(
-                Icons.edit_outlined,
-                size: 14,
-                color: AppColors.gray500,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // ===========================================================
-  // ACTIONS
-  // ===========================================================
-
-  Widget _buildEditActions() {
-    return Padding(
-      padding: const EdgeInsets.all(12),
-
-      child: Row(
-        children: [
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isEditing = false;
-                });
-              },
-
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.gray100,
-                elevation: 0,
-              ),
-
-              child: const Text(
-                'Annuler',
-                style: TextStyle(color: AppColors.gray500),
-              ),
-            ),
-          ),
-
-          const SizedBox(width: 10),
-
-          Expanded(
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isEditing = false;
-                });
-              },
-
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.green,
-                elevation: 0,
-              ),
-
-              child: const Text(
-                'Enregistrer',
-                style: TextStyle(color: AppColors.white),
-              ),
+          Text(label, style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w700, color: AppColors.gray400, letterSpacing: 0.5)),
+          const SizedBox(height: 6),
+          TextFormField(
+            controller: controller,
+            enabled: enabled,
+            validator: validator,
+            textInputAction: TextInputAction.next,
+            style: const TextStyle(fontSize: 14),
+            decoration: InputDecoration(
+              filled: true,
+              fillColor: const Color(0xFFF9FAFB),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE5E7EB))),
+              enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFE5E7EB))),
+              disabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFF3F4F6))),
             ),
           ),
         ],

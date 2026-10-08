@@ -1,257 +1,228 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/network/app_exceptions.dart';
+import '../core/providers/campagne_providers.dart';
+import '../core/providers/dashboard_providers.dart';
 import '../core/theme/kiyanza_colors.dart';
-import '../core/theme/kiyanza_sizes.dart';
+import '../core/widget/recommendation_card.dart';
+import '../data/models/campagnes/campagne_models.dart';
+import '../data/models/dashboard/dashboard_models.dart';
 
-class RecommendationsScreen extends StatelessWidget {
-  const RecommendationsScreen({super.key});
+/// Recommandations IA d'une campagne (même contenu que la page
+/// Recommandations du site). Ouvre la campagne en cours par défaut.
+class RecommendationsScreen extends ConsumerStatefulWidget {
+  final String? initialCampaignId;
+
+  const RecommendationsScreen({super.key, this.initialCampaignId});
+
+  @override
+  ConsumerState<RecommendationsScreen> createState() => _RecommendationsScreenState();
+}
+
+class _RecommendationsScreenState extends ConsumerState<RecommendationsScreen> {
+  String? _campaignId;
+  List<RecommendationModel> _recommendations = const [];
+  bool _loading = false;
+  bool _generating = false;
+  String? _error;
+
+  void _ensureSelection(List<CampagneModel> campaigns) {
+    if (_campaignId != null || campaigns.isEmpty) return;
+    final requested = campaigns.where((c) => c.id == widget.initialCampaignId);
+    final running = campaigns.where((c) => c.status == CampaignStatus.inProgress);
+    final initial = requested.isNotEmpty
+        ? requested.first
+        : (running.isNotEmpty ? running.first : campaigns.first);
+    _campaignId = initial.id;
+    WidgetsBinding.instance.addPostFrameCallback((_) => _load(initial.id));
+  }
+
+  Future<void> _load(String campaignId) async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final recos = await ref.read(dashboardRemoteDatasourceProvider).recommendations(campaignId);
+      if (mounted && _campaignId == campaignId) setState(() => _recommendations = recos);
+    } on AppException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _generate() async {
+    final campaignId = _campaignId;
+    if (campaignId == null) return;
+    setState(() {
+      _generating = true;
+      _error = null;
+    });
+    try {
+      final recos = await ref.read(dashboardRemoteDatasourceProvider).generateRecommendations(campaignId);
+      ref.invalidate(homeDataProvider);
+      if (mounted && _campaignId == campaignId) setState(() => _recommendations = recos);
+    } on AppException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _generating = false);
+    }
+  }
+
+  void _select(String? campaignId) {
+    if (campaignId == null || campaignId == _campaignId) return;
+    setState(() {
+      _campaignId = campaignId;
+      _recommendations = const [];
+    });
+    _load(campaignId);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final campaignsState = ref.watch(campagnesNotifierProvider);
+    final campaigns = campaignsState.items;
+    _ensureSelection(campaigns);
+
     return Scaffold(
       backgroundColor: AppColors.white,
-
-      // =====================================================
-      // BOTTOM NAVIGATION
-      // =====================================================
       body: SafeArea(
         child: Column(
           children: [
-            // =================================================
-            // HEADER
-            // =================================================
             _buildHeader(context),
-
-            // =================================================
-            // CONTENU
-            // =================================================
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-
-                child: Column(
-                  children: [
-                    // Carte Kiyanza IA
-                    const _KiyanzaAiCard(),
-
-                    const SizedBox(height: 14),
-
-                    // Recommandation Facebook
-                    const _RecommendationCard(
-                      icon: Icons.facebook,
-                      iconColor: Color(0xFF1877F2),
-                      title: 'Augmenter le budget sur Facebook Ads',
-                      description: 'Augmenter de 20% votre budget Facebook pour générer plus de conversions.',
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Recommandation Instagram
-                    const _RecommendationCard(
-                      icon: Icons.camera_alt_outlined,
-                      iconColor: Color(0xFFE1306C),
-                      title: 'Optimiser les visuels Instagram',
-                      description: 'Utilisez des visuels plus engageants pour améliorer le taux de clic.',
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    // Recommandation TikTok
-                    const _RecommendationCard(
-                      icon: Icons.music_note,
-                      iconColor: AppColors.black,
-                      title: 'Tester un nouveau canal',
-                      description: 'Nous recommandons d’ajouter TikTok Ads pour toucher une nouvelle audience.',
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // =================================================
-            // BOUTON APPLIQUER
-            // =================================================
-            _buildApplyButton(context),
+            Expanded(child: _buildBody(campaignsState, campaigns)),
           ],
         ),
       ),
     );
   }
 
-  // ===========================================================
-  // HEADER
-  // ===========================================================
-
   Widget _buildHeader(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+      decoration: const BoxDecoration(
+        border: Border(bottom: BorderSide(color: Color(0xFFF3F4F6), width: 1.2)),
+      ),
       child: Row(
         children: [
-          GestureDetector(
-            onTap: () {
-              Navigator.pop(context);
-            },
-
-            child: const Icon(
-              Icons.arrow_back_ios_new,
-              size: 17,
-              color: AppColors.black,
-            ),
+          IconButton(
+            tooltip: 'Retour',
+            onPressed: () => Navigator.pop(context),
+            icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.black),
           ),
-
           const Expanded(
             child: Center(
               child: Text(
                 'Recommandations IA',
-
-                style: TextStyle(
-                  fontSize: AppSizes.text14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.black,
-                ),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: AppColors.black),
               ),
             ),
           ),
-
-          // Pour garder le titre parfaitement centré
-          const SizedBox(width: 17),
+          const SizedBox(width: 48),
         ],
       ),
     );
   }
 
-  // ===========================================================
-  // BOUTON APPLIQUER
-  // ===========================================================
-
-  Widget _buildApplyButton(BuildContext context) {
-    return Container(
-      width: double.infinity,
-
-      padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-
-      decoration: BoxDecoration(
-        color: AppColors.white,
-
-        border: Border(top: BorderSide(color: Colors.black.withOpacity(0.05))),
-      ),
-
-      child: SizedBox(
-        height: 48,
-
-        child: ElevatedButton(
-          onPressed: () {
-            // TODO:
-            // Appliquer les recommandations au scénario
-          },
-
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.green,
-
-            foregroundColor: AppColors.white,
-
-            elevation: 0,
-
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
+  Widget _buildBody(CampagnesState state, List<CampagneModel> campaigns) {
+    if (state.status == CampagnesStatus.loading || state.status == CampagnesStatus.initial) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (state.status == CampagnesStatus.error) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(state.errorMessage ?? 'Impossible de charger vos campagnes.',
+                textAlign: TextAlign.center, style: const TextStyle(color: AppColors.gray500)),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => ref.read(campagnesNotifierProvider.notifier).refresh(),
+              child: const Text('Réessayer'),
             ),
-          ),
-
-          child: const Text(
-            'Appliquer les recommandations',
-
-            style: TextStyle(
-              fontSize: AppSizes.text12,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          ],
         ),
-      ),
-    );
-  }
-}
+      );
+    }
+    if (campaigns.isEmpty) {
+      return const _Message(
+        icon: Icons.campaign_outlined,
+        text: "Vous n'avez pas encore de campagne. Créez-en une pour recevoir des recommandations.",
+      );
+    }
 
-// =============================================================
-// CARTE KIYANZA IA
-// =============================================================
-
-class _KiyanzaAiCard extends StatelessWidget {
-  const _KiyanzaAiCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-
-      padding: const EdgeInsets.all(14),
-
-      decoration: BoxDecoration(
-        color: AppColors.white,
-
-        borderRadius: BorderRadius.circular(14),
-
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.025),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-
-      child: Row(
+    return RefreshIndicator(
+      onRefresh: () => _campaignId == null ? Future.value() : _load(_campaignId!),
+      child: ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
         children: [
-          // Icone IA
-          Container(
-            width: 40,
-            height: 40,
-
-            decoration: BoxDecoration(
-              color: AppColors.blue.withOpacity(0.12),
-
-              borderRadius: BorderRadius.circular(10),
-            ),
-
-            child: const Icon(
-              Icons.auto_awesome,
-              color: AppColors.blue,
-              size: 19,
+          const Text('CAMPAGNE',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: AppColors.gray400, letterSpacing: 0.5)),
+          const SizedBox(height: 6),
+          DropdownButtonFormField<String>(
+            initialValue: _campaignId,
+            isExpanded: true,
+            onChanged: (_generating || _loading) ? null : _select,
+            items: [
+              for (final c in campaigns)
+                DropdownMenuItem(
+                  value: c.id,
+                  child: Text('${c.name} · ${campaignStatusLabel(c.status)}', overflow: TextOverflow.ellipsis),
+                ),
+            ],
+            decoration: InputDecoration(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(30)),
             ),
           ),
-
-          const SizedBox(width: 12),
-
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Text(
-                  'KIYANZA IA',
-
-                  style: TextStyle(
-                    fontSize: AppSizes.text12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.black,
-                  ),
-                ),
-
-                SizedBox(height: 4),
-
-                Text(
-                  'Voici nos recommandations pour améliorer\n'
-                  'les performances de vos campagnes.',
-
-                  style: TextStyle(
-                    fontSize: AppSizes.text10,
-                    height: 1.4,
-                    color: AppColors.gray400,
-                  ),
-                ),
-              ],
+          const SizedBox(height: 18),
+          if (_generating)
+            const _Message(
+              icon: Icons.auto_awesome,
+              text: "L'IA analyse votre campagne : paramètres, simulation, résultats réels, alertes, radio et terrain…",
+            )
+          else if (_loading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(child: CircularProgressIndicator()),
+            )
+          else if (_recommendations.isEmpty)
+            const _Message(
+              icon: Icons.lightbulb_outline,
+              text: "Aucune recommandation pour cette campagne. Demandez des conseils à l'IA.",
+            )
+          else ...[
+            for (final reco in _recommendations) RecommendationCard(reco: reco),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 12),
+              child: Text(
+                "Rédigées par l'IA à partir des données de la campagne. Actualisez-les quand la campagne évolue.",
+                style: TextStyle(fontSize: 11, color: AppColors.gray400, height: 1.4),
+              ),
+            ),
+          ],
+          if (_error != null)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(_error!, style: const TextStyle(fontSize: 12.5, color: Color(0xFFDC2626))),
+            ),
+          SizedBox(
+            height: 48,
+            child: ElevatedButton.icon(
+              onPressed: (_generating || _loading || _campaignId == null) ? null : _generate,
+              icon: _generating
+                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
+                  : Icon(_recommendations.isEmpty ? Icons.auto_awesome : Icons.refresh, size: 18),
+              label: Text(_recommendations.isEmpty ? 'Générer des recommandations' : 'Actualiser les recommandations'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF2563EB),
+                foregroundColor: AppColors.white,
+                shape: const StadiumBorder(),
+                elevation: 0,
+              ),
             ),
           ),
         ],
@@ -260,101 +231,21 @@ class _KiyanzaAiCard extends StatelessWidget {
   }
 }
 
-// =============================================================
-// CARTE RECOMMANDATION
-// =============================================================
-
-class _RecommendationCard extends StatelessWidget {
+class _Message extends StatelessWidget {
   final IconData icon;
-  final Color iconColor;
-  final String title;
-  final String description;
+  final String text;
 
-  const _RecommendationCard({
-    required this.icon,
-    required this.iconColor,
-    required this.title,
-    required this.description,
-  });
+  const _Message({required this.icon, required this.text});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-
-      padding: const EdgeInsets.all(14),
-
-      decoration: BoxDecoration(
-        color: AppColors.white,
-
-        borderRadius: BorderRadius.circular(14),
-
-        border: Border.all(color: const Color(0xFFF0F0F0)),
-
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.025),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 8),
+      child: Column(
         children: [
-          // ===================================================
-          // ICONE
-          // ===================================================
-
-          Container(
-            width: 32,
-            height: 32,
-
-            decoration: BoxDecoration(
-              color: iconColor.withOpacity(0.10),
-
-              borderRadius: BorderRadius.circular(9),
-            ),
-
-            child: Icon(icon, size: 16, color: iconColor),
-          ),
-
-          const SizedBox(width: 12),
-
-          // ===================================================
-          // TEXTE
-          // ===================================================
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-
-              children: [
-                Text(
-                  title,
-
-                  style: const TextStyle(
-                    fontSize: AppSizes.text12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.black,
-                  ),
-                ),
-
-                const SizedBox(height: 6),
-
-                Text(
-                  description,
-
-                  style: const TextStyle(
-                    fontSize: AppSizes.text10,
-                    height: 1.4,
-                    color: AppColors.gray400,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          Icon(icon, size: 34, color: AppColors.gray400),
+          const SizedBox(height: 10),
+          Text(text, textAlign: TextAlign.center, style: const TextStyle(fontSize: 13, color: AppColors.gray500, height: 1.4)),
         ],
       ),
     );
