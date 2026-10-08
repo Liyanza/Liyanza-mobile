@@ -654,54 +654,6 @@ Widget build(BuildContext context) {
                 },
               ),
 
-              ListTile(
-                leading: const Icon(Icons.edit_outlined),
-                title: const Text('Modifier la campagne'),
-
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  // TODO: navigation vers l'écran d'édition
-                },
-              ),
-
-              ListTile(
-                leading: const Icon(Icons.copy_outlined),
-                title: const Text('Dupliquer'),
-
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  // TODO: dupliquer la campagne
-                },
-              ),
-
-              ListTile(
-                leading: const Icon(Icons.archive_outlined),
-                title: const Text('Archiver'),
-
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  // TODO: archiver la campagne
-                },
-              ),
-
-              ListTile(
-                leading: const Icon(
-                  Icons.delete_outline,
-                  color: Color(0xFFDC2626),
-                ),
-
-                title: const Text(
-                  'Supprimer la campagne',
-
-                  style: TextStyle(color: Color(0xFFDC2626)),
-                ),
-
-                onTap: () {
-                  Navigator.pop(sheetContext);
-                  // TODO: confirmer puis supprimer la campagne
-                },
-              ),
-
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
 
@@ -828,7 +780,6 @@ Widget build(BuildContext context) {
 // MODEL
 // =============================================================
 
-// APRÈS
 class CampaignItem {
   final String? id;
   final String title;
