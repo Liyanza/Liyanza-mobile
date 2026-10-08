@@ -14,8 +14,12 @@ import '../mon_profil/profil.dart';
 
 /// Montant FCFA compact : 2 450 000 → « 2,45M », 82 600 → « 82,6K ».
 String formatCompactAmount(double value) {
-  String trim(double v, int digits) =>
-      v.toStringAsFixed(digits).replaceFirst(RegExp(r'\.?0+$'), '').replaceAll('.', ',');
+  String trim(double v, int digits) {
+    var text = v.toStringAsFixed(digits);
+    // Zéros inutiles après la virgule seulement (« 2,50 » → « 2,5 », « 3,00 » → « 3 »).
+    if (text.contains('.')) text = text.replaceFirst(RegExp(r'0+$'), '').replaceFirst(RegExp(r'\.$'), '');
+    return text.replaceAll('.', ',');
+  }
   if (value >= 1e9) return '${trim(value / 1e9, 2)}Md';
   if (value >= 1e6) return '${trim(value / 1e6, 2)}M';
   if (value >= 1e3) return '${trim(value / 1e3, 1)}K';
