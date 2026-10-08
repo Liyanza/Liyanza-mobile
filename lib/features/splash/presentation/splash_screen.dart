@@ -46,9 +46,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      // Défile sur les petits écrans au lieu de déborder ; sur les autres,
+      // l'espace libre se place entre le texte et le bouton.
       body: SafeArea(
-        child: Center(
-          child: Column(
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
             children: [
               const SizedBox(height: 30),
               SizedBox(
@@ -95,7 +101,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 'Votre copilote marketing intelligent',
                 style: TextStyle(fontSize: 14, color: Colors.grey),
               ),
-              const SizedBox(height: 250),
+              const SizedBox(height: 40),
+              const Spacer(),
               SizedBox(
                 width: 220,
                 height: 50,
@@ -122,6 +129,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               ),
               const SizedBox(height: 30),
             ],
+                ),
+              ),
+            ),
           ),
         ),
       ),
