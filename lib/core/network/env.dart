@@ -1,36 +1,18 @@
-enum AppEnv { emulatorAndroid, simulatorIOS, physicalDevice, production }
+/// Adresse de l'API Kiyanza (backend NestJS hébergé sur AWS).
+///
+/// Production par défaut. Pour viser une autre API (backend local, tests),
+/// sans toucher au code :
+///   flutter run --dart-define=API_URL=http://10.0.2.2:3000   (émulateur Android)
+///   flutter run --dart-define=API_URL=http://192.168.1.20:3000 (téléphone, IP LAN du PC)
+const String productionApiUrl = 'https://api.kiyanza.com';
 
 class EnvConfig {
   final String baseUrl;
   const EnvConfig._(this.baseUrl);
-
-  static EnvConfig forEnv(AppEnv env) {
-    switch (env) {
-      case AppEnv.emulatorAndroid:
-        // L'API de développement locale n'est pas disponible dans cette
-        // application ; l'émulateur utilise donc l'API distante.
-        return const EnvConfig._('https://liyanza-backend.onrender.com');
-      case AppEnv.simulatorIOS:
-        // Le simulateur iOS partage le réseau de la machine hôte :
-        // localhost fonctionne directement, pas d'alias nécessaire.
-        return const EnvConfig._('https://liyanza-backend.onrender.com');
-      case AppEnv.physicalDevice:
-        // Téléphone physique sur le MÊME réseau Wi-Fi que la machine de dev.
-        // Remplacer par l'IP LAN réelle de la machine (ipconfig/ifconfig).
-        return const EnvConfig._('https://liyanza-backend.onrender.com');
-      case AppEnv.production:
-        return const EnvConfig._('https://liyanza-backend.onrender.com');
-    }
-  }
 }
 
-// Sélection au lancement, sans toucher au code :
-//   flutter run --dart-define=APP_ENV=emulatorAndroid
-//   flutter run --dart-define=APP_ENV=physicalDevice
-//   flutter build apk --dart-define=APP_ENV=production
-const _envName = String.fromEnvironment('APP_ENV', defaultValue: 'production');
-final AppEnv currentEnv = AppEnv.values.firstWhere(
-  (e) => e.name == _envName,
-  orElse: () => AppEnv.production,
+const _apiUrlOverride = String.fromEnvironment('API_URL');
+
+final EnvConfig envConfig = EnvConfig._(
+  _apiUrlOverride.isNotEmpty ? _apiUrlOverride : productionApiUrl,
 );
-final EnvConfig envConfig = EnvConfig.forEnv(currentEnv);
