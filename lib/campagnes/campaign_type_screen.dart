@@ -4,7 +4,7 @@ import '../core/theme/kiyanza_colors.dart';
 import '../core/theme/kiyanza_sizes.dart';
 import '../data/models/campagnes/campagne_models.dart'; // CampaignType
 import 'campaign_objective_screen.dart';
-import '../campagne_radio/radio_station_screen.dart';
+import '../campagne_radio/radio_flow.dart';
 import 'campaign_step_dots.dart';
 
 class CampaignTypeScreen extends StatelessWidget {
@@ -22,8 +22,6 @@ class CampaignTypeScreen extends StatelessWidget {
       icon: Icons.radio_outlined,
       title: 'Campagne Radio',
       description: 'Diffusion sur les radios locales et nationales',
-      // Flux Radio non branché sur POST /campagnes (voir l'intro de ce
-      // guide) — laissé tel quel, inchangé.
       destinationBuilder: (context) => const RadioStationScreen(),
     ),
     _CampaignTypeOption(

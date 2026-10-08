@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import '../models/campagnes/campagne_models.dart';
 import '../models/campagnes/campaign_detail_models.dart';
+import '../models/campagnes/radio_draft.dart';
 import '../../core/network/dio_error_mapper.dart';
 
 /// Routes du détail d'une campagne (toutes protégées : Dio de l'ApiClient).
@@ -87,6 +88,34 @@ class CampaignDetailRemoteDatasource {
           '/campagnes/$campaignId/simulations-digitales',
           options: Options(receiveTimeout: const Duration(seconds: 90)),
         );
+      });
+
+  /// Canal de diffusion radio de la campagne ; renvoie son identifiant.
+  Future<String> createRadioChannel(String campaignId) => _guard(() async {
+        final response = await _dio.post('/campagnes/$campaignId/canaux', data: {
+          'channels': [
+            {'radio': true, 'poster': false, 'flyer': false},
+          ],
+        });
+        final channels = response.data as List;
+        return (channels.first as Map<String, dynamic>)['id'] as String;
+      });
+
+  /// Planning des diffusions (500 au plus) ; renvoie le nombre créé.
+  Future<int> createSchedule(String campaignId, String channelId, List<PlannedBroadcast> broadcasts) =>
+      _guard(() async {
+        final response = await _dio.post('/campagnes/$campaignId/planning', data: {
+          'broadcasts': [
+            for (final b in broadcasts)
+              {
+                'mediaType': 'RADIO',
+                'scheduledAt': b.scheduledAt.toUtc().toIso8601String(),
+                'duration': b.durationSeconds,
+                'channelId': channelId,
+              },
+          ],
+        });
+        return (response.data as List).length;
       });
 
   /// Change le statut (DRAFT → PLANNED → IN_PROGRESS → COMPLETED, ou CANCELLED).
