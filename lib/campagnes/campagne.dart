@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/models/campagnes/campaign_creation_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/providers/campagne_providers.dart';
 
@@ -747,6 +748,7 @@ Widget build(BuildContext context) {
               context,
               MaterialPageRoute(
                 builder: (context) => const CampaignTypeScreen(),
+                settings: const RouteSettings(name: campaignTypeRouteName),
               ),
             );
           },

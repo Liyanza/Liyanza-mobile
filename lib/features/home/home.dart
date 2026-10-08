@@ -9,6 +9,7 @@ import '../../data/models/dashboard/dashboard_models.dart';
 import '../../simulation/recommendation.dart';
 import '../../campagnes/campagne.dart';
 import '../../../monitoring_radio/monitoring.dart';
+import '../authentification/create_company_screen.dart';
 import '../notification/notification.dart';
 import '../mon_profil/profil.dart';
 
@@ -256,15 +257,37 @@ class _NoCompanyCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: _cardDecoration(),
-      child: const Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.business_outlined, color: AppColors.blue),
-          SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              "Votre compte n'est rattaché à aucune entreprise. Créez-la sur kiyanza.com, "
-              "ou demandez une invitation à votre administrateur, pour lancer vos campagnes.",
-              style: TextStyle(fontSize: 13, color: AppColors.gray500, height: 1.4),
+          const Row(
+            children: [
+              Icon(Icons.business_outlined, color: AppColors.blue),
+              SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  "Votre compte n'est rattaché à aucune entreprise. Créez-la pour lancer vos "
+                  "campagnes, ou attendez l'invitation de votre administrateur.",
+                  style: TextStyle(fontSize: 13, color: AppColors.gray500, height: 1.4),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateCompanyScreen()),
+              ),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.green,
+                foregroundColor: AppColors.white,
+                shape: const StadiumBorder(),
+                elevation: 0,
+              ),
+              child: const Text('Créer mon entreprise', style: TextStyle(fontSize: 12.5)),
             ),
           ),
         ],

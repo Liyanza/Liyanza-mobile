@@ -4,6 +4,7 @@ import '../../core/network/app_exceptions.dart';
 import '../../core/providers/auth_providers.dart';
 import '../../core/theme/kiyanza_colors.dart';
 import 'forgot_password.dart';
+import 'register_screen.dart';
 import '../../core/navigation/main_navigation.dart';
 
 // La classe devient ConsumerStatefulWidget / ConsumerState au lieu de
@@ -160,78 +161,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      // GOOGLE — bouton pilule
-                                      _SocialButton(
-                                        height: h(46),
-                                        radius: s(100),
-                                        icon: Image.asset(
-                                          'assets/icons/google.png',
-                                          width: s(18),
-                                          height: s(18),
-                                          // Si l'asset n'existe pas encore dans le projet,
-                                          // on affiche un repli au lieu de planter.
-                                          errorBuilder: (
-                                            context,
-                                            error,
-                                            stackTrace,
-                                          ) => _GoogleGIcon(size: s(18)),
-                                        ),
-                                        label: 'Continuer avec  Google',
-                                        fontSize: s(16),
-                                        onTap: () {},
-                                      ),
-
-                                      SizedBox(height: h(24)),
-
-                                      // FACEBOOK — bouton pilule
-                                      _SocialButton(
-                                        height: h(46),
-                                        radius: s(100),
-                                        icon: Icon(
-                                          Icons.facebook,
-                                          color: const Color(0xFF1877F2),
-                                          size: s(24),
-                                        ),
-                                        label: 'Continuer avec Facebook',
-                                        fontSize: s(16),
-                                        onTap: () {},
-                                      ),
-
-                                      SizedBox(height: h(24)),
-
-                                      // SÉPARATEUR "Ou se connecter avec"
-                                      Row(
-                                        children: [
-                                          Expanded(
-                                            child: Divider(
-                                              color: const Color(0xFFE5E7EB),
-                                              height: 1,
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: EdgeInsets.symmetric(
-                                              horizontal: w(16),
-                                            ),
-                                            child: Text(
-                                              'Ou se connecter avec',
-                                              style: TextStyle(
-                                                fontFamily: 'Poppins',
-                                                fontSize: s(12),
-                                                color: const Color(0xFF6C7278),
-                                              ),
-                                            ),
-                                          ),
-                                          Expanded(
-                                            child: Divider(
-                                              color: const Color(0xFFE5E7EB),
-                                              height: 1,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-
-                                      SizedBox(height: h(24)),
-
+                                      // La connexion Google / Facebook sur mobile
+                                      // attend la clé de signature de publication
+                                      // (voir lot « publication ») : pas de
+                                      // boutons inactifs d'ici là.
                                       // CHAMP EMAIL — le texte "Email" sert de hint, pas de label séparé
                                       _AuthField(
                                         controller: _emailController,
@@ -408,7 +341,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           ),
                                         ),
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () => Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (_) => const RegisterScreen(),
+                                            ),
+                                          ),
                                           child: Text(
                                             'Créer un compte',
                                             style: TextStyle(
@@ -442,101 +379,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
 // =========================
 // Bouton social pilule (Google / Facebook)
-// =========================
-class _SocialButton extends StatelessWidget {
-  final double height;
-  final double radius;
-  final Widget icon;
-  final String label;
-  final double fontSize;
-  final VoidCallback onTap;
-
-  const _SocialButton({
-    required this.height,
-    required this.radius,
-    required this.icon,
-    required this.label,
-    required this.fontSize,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: height,
-      child: OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: Colors.white,
-          side: const BorderSide(color: Color(0xFFEFF0F6)),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radius),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icon,
-            const SizedBox(width: 10),
-            Flexible(
-              child: Text(
-                label,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w600,
-                  fontSize: fontSize,
-                  color: const Color(0xFF1A1C1E),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// =========================
-// Repli pour le logo Google si assets/icons/google.png est absent.
-// Remplacé automatiquement par la vraie image dès qu'elle existe.
-// =========================
-class _GoogleGIcon extends StatelessWidget {
-  final double size;
-
-  const _GoogleGIcon({required this.size});
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Center(
-        child: Text(
-          'G',
-          style: TextStyle(
-            fontSize: size * 0.85,
-            fontWeight: FontWeight.bold,
-            height: 1,
-            foreground: Paint()
-              ..shader = const LinearGradient(
-                colors: [
-                  Color(0xFF4285F4),
-                  Color(0xFF34A853),
-                  Color(0xFFFBBC05),
-                  Color(0xFFEA4335),
-                ],
-              ).createShader(Rect.fromLTWH(0, 0, size, size)),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// =========================
-// Champ de saisie style maquette (le hint fait office de label)
 // =========================
 class _AuthField extends StatelessWidget {
   final TextEditingController controller;

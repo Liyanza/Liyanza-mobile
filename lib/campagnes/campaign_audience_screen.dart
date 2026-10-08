@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/models/campagnes/campaign_creation_models.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
@@ -11,10 +12,14 @@ class CampaignAudienceScreen extends StatefulWidget {
   final CampaignType type;
   final String objective;
 
+  /// Code DigitalObjective (campagne digitale uniquement).
+  final String? digitalObjective;
+
   const CampaignAudienceScreen({
     super.key,
     required this.type,
     required this.objective,
+    this.digitalObjective,
   });
 
   @override
@@ -24,9 +29,20 @@ class CampaignAudienceScreen extends StatefulWidget {
 class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
   String _age = '18 - 35 ans';
   String _gender = 'Tous';
-  String _location = 'Yaoundé, Douala';
+  String _location = '';
 
-  final List<String> _interests = ['Technologie', 'Mode', 'Sport'];
+  final List<String> _interests = [];
+
+  AudienceSelection get _selection {
+    final (ageMin, ageMax) = ageRangeOptions[_age] ?? (18, 35);
+    return AudienceSelection(
+      ageMin: ageMin,
+      ageMax: ageMax,
+      gender: genderOptions[_gender] ?? 'ALL',
+      locations: splitList(_location),
+      interests: List.unmodifiable(_interests),
+    );
+  }
 
   // ===========================================================
   // ACTIONS
@@ -45,8 +61,8 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
     }
 
     final options = label == 'Âge'
-        ? ['13 - 17 ans', '18 - 35 ans', '36 - 50 ans', '51 ans et +']
-        : ['Tous', 'Femmes', 'Hommes'];
+        ? ageRangeOptions.keys.toList()
+        : genderOptions.keys.toList();
     final selected = await showModalBottomSheet<String>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -285,7 +301,7 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
         children: [
           _buildDemographicsRow('Âge', _age, showBorder: true),
           _buildDemographicsRow('Genre', _gender, showBorder: true),
-          _buildDemographicsRow('Localisation', _location, showBorder: false),
+          _buildDemographicsRow('Localisation', _location.isEmpty ? 'Toutes les zones' : _location, showBorder: false),
         ],
       ),
     );
@@ -481,6 +497,8 @@ class _CampaignAudienceScreenState extends State<CampaignAudienceScreen> {
                 builder: (_) => BudgetScreen(
                   type: widget.type,
                   objective: widget.objective,
+                  digitalObjective: widget.digitalObjective,
+                  audience: _selection,
                 ),
               ),
             );

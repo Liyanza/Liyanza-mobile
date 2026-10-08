@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../data/models/campagnes/campaign_creation_models.dart';
 
 import '../theme/kiyanza_colors.dart';
 import '../../campagnes/campaign_type_screen.dart';
@@ -94,7 +95,10 @@ class _QuickActionsSheet extends StatelessWidget {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const CampaignTypeScreen()),
+                        MaterialPageRoute(
+                          builder: (_) => const CampaignTypeScreen(),
+                          settings: const RouteSettings(name: campaignTypeRouteName),
+                        ),
                       );
                     },
                   ),

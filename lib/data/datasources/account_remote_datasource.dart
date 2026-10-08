@@ -26,6 +26,22 @@ class AccountRemoteDatasource {
         return CompanyModel.fromJson(response.data as Map<String, dynamic>);
       });
 
+  /// Crée l'entreprise de l'utilisateur, qui en devient l'administrateur
+  /// (409 s'il en a déjà une).
+  Future<CompanyModel> createCompany({
+    required String name,
+    required String businessSector,
+    required String address,
+  }) =>
+      _guard(() async {
+        final response = await _dio.post('/entreprises', data: {
+          'name': name,
+          'businessSector': businessSector,
+          'address': address,
+        });
+        return CompanyModel.fromJson(response.data as Map<String, dynamic>);
+      });
+
   /// Réservé à l'administrateur de l'entreprise (403 sinon).
   Future<CompanyModel> updateCompany(
     String companyId, {
