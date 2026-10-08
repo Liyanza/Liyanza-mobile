@@ -11,8 +11,9 @@ class CampagneRepository {
     int limit = 10,
     CampaignStatus? status,
     CampaignType? type,
+    String? search,
   }) =>
-      _remote.list(page: page, limit: limit, status: status, type: type);
+      _remote.list(page: page, limit: limit, status: status, type: type, search: search);
 
   Future<CampagneModel> create(CreateCampagneRequest request) => _remote.create(request);
 

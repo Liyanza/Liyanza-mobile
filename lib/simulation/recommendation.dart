@@ -14,7 +14,10 @@ import '../data/models/dashboard/dashboard_models.dart';
 class RecommendationsScreen extends ConsumerStatefulWidget {
   final String? initialCampaignId;
 
-  const RecommendationsScreen({super.key, this.initialCampaignId});
+  /// false quand l'écran est un onglet de la barre du bas (pas de retour).
+  final bool showBack;
+
+  const RecommendationsScreen({super.key, this.initialCampaignId, this.showBack = true});
 
   @override
   ConsumerState<RecommendationsScreen> createState() => _RecommendationsScreenState();
@@ -107,11 +110,14 @@ class _RecommendationsScreenState extends ConsumerState<RecommendationsScreen> {
       ),
       child: Row(
         children: [
-          IconButton(
-            tooltip: 'Retour',
-            onPressed: () => Navigator.pop(context),
-            icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.black),
-          ),
+          if (widget.showBack)
+            IconButton(
+              tooltip: 'Retour',
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(Icons.arrow_back_ios_new, size: 18, color: AppColors.black),
+            )
+          else
+            const SizedBox(width: 48),
           const Expanded(
             child: Center(
               child: Text(

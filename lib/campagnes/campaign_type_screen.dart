@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
-import '../../../core/theme/kiyanza_sizes.dart';
+import '../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_sizes.dart';
 import '../data/models/campagnes/campagne_models.dart'; // CampaignType
 import 'campaign_objective_screen.dart';
 import '../campagne_radio/radio_station_screen.dart';

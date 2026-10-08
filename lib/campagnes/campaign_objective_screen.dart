@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../data/models/campagnes/campaign_creation_models.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
-import '../../../core/theme/kiyanza_sizes.dart';
+import '../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_sizes.dart';
 import '../data/models/campagnes/campagne_models.dart';
 import 'campaign_audience_screen.dart';
 import 'campaign_step_dots.dart';

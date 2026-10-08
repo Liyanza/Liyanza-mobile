@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_colors.dart';
 
 // =================================================================
 // INDICATEUR D'ÉTAPES (utilisé dans tout le flow "Nouvelle campagne")

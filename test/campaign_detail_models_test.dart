@@ -58,6 +58,10 @@ void main() {
     expect(sim.predictedClicks, 100);
     expect(sim.summary, 'Résumé IA.');
     expect(sim.warnings, ['Budget serré']);
+    expect(sim.scenarios, hasLength(2));
+    expect(sim.scenarios.last.isRecommended, isTrue);
+    expect(sim.scenarios.last.clicks, 100);
+    expect(scenarioStrategyDescription('broad'), isNotEmpty);
   });
 
   test('conformity report maps the French field names', () {

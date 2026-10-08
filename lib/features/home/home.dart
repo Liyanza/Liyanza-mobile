@@ -8,7 +8,7 @@ import '../../data/models/campagnes/campagne_models.dart';
 import '../../data/models/dashboard/dashboard_models.dart';
 import '../../simulation/recommendation.dart';
 import '../../campagnes/campagne.dart';
-import '../../../monitoring_radio/monitoring.dart';
+import '../../monitoring_radio/monitoring.dart';
 import '../authentification/create_company_screen.dart';
 import '../notification/notification.dart';
 import '../mon_profil/profil.dart';

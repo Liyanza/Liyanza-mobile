@@ -85,6 +85,45 @@ String scenarioStrategyLabel(String? strategy) => switch (strategy) {
       _ => 'Recommandé',
     };
 
+/// Un des trois scénarios comparés par le moteur (même budget).
+class ScenarioModel {
+  final String? strategy;
+  final bool isRecommended;
+  final double score;
+  final double reach;
+  final double clicks;
+  final double conversions;
+  final double? costPerAcquisition;
+
+  const ScenarioModel({
+    this.strategy,
+    required this.isRecommended,
+    required this.score,
+    required this.reach,
+    required this.clicks,
+    required this.conversions,
+    this.costPerAcquisition,
+  });
+
+  factory ScenarioModel.fromJson(Map<String, dynamic> json) => ScenarioModel(
+        strategy: json['strategy'] as String?,
+        isRecommended: json['isRecommended'] == true,
+        score: _toDouble(json['score']),
+        reach: _toDouble(json['predictedReach']),
+        clicks: _toDouble(json['predictedClicks']),
+        conversions: _toDouble(json['predictedConversions']),
+        costPerAcquisition: _toDoubleOrNull(json['costPerAcquisition']),
+      );
+}
+
+/// Description courte de chaque stratégie (mêmes textes que le site).
+String scenarioStrategyDescription(String? strategy) => switch (strategy) {
+      'balanced' => 'Vos réglages tels quels.',
+      'broad' => 'Plus de personnes touchées, moins de résultats par personne.',
+      'focused' => 'Moins de personnes, mieux ciblées : plus de résultats par personne.',
+      _ => '',
+    };
+
 class SimulationSummaryModel {
   final String id;
   final DateTime simulatedAt;
@@ -101,6 +140,7 @@ class SimulationSummaryModel {
   /// Résumé de l'analyse IA, sinon texte du moteur.
   final String? summary;
   final List<String> warnings;
+  final List<ScenarioModel> scenarios;
 
   const SimulationSummaryModel({
     required this.id,
@@ -114,6 +154,7 @@ class SimulationSummaryModel {
     this.recommendedStrategy,
     this.summary,
     this.warnings = const [],
+    this.scenarios = const [],
   });
 
   factory SimulationSummaryModel.fromJson(Map<String, dynamic> json) {
@@ -136,6 +177,7 @@ class SimulationSummaryModel {
           ? aiSummary
           : json['narrativeSummary'] as String?,
       warnings: _strings(json['warnings']),
+      scenarios: scenarios.map(ScenarioModel.fromJson).toList(),
     );
   }
 }
