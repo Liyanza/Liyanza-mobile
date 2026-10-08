@@ -49,6 +49,46 @@ class CampaignDetailRemoteDatasource {
         return ConformityReportModel.fromJson(response.data as Map<String, dynamic>);
       });
 
+  /// Paramètres digitaux de la campagne (objectif, audience, type de budget).
+  Future<void> upsertDigitalDetails(
+    String campaignId, {
+    required String objective,
+    required int ageMin,
+    required int ageMax,
+    required String gender,
+    required List<String> locations,
+    required List<String> interests,
+    String budgetAllocation = 'TOTAL',
+  }) =>
+      _guard(() async {
+        await _dio.put('/campagnes/$campaignId/digital-details', data: {
+          'objective': objective,
+          'ageMin': ageMin,
+          'ageMax': ageMax,
+          'targetGender': gender,
+          'targetLocations': locations,
+          'targetInterests': interests,
+          'budgetAllocation': budgetAllocation,
+        });
+      });
+
+  /// Canaux de diffusion ; le compte social se relie ensuite sur le site.
+  Future<void> selectChannels(String campaignId, List<String> platforms) => _guard(() async {
+        await _dio.put('/campagnes/$campaignId/digital-details/channels', data: {
+          'channels': [
+            for (final platform in platforms) {'platform': platform},
+          ],
+        });
+      });
+
+  /// Lance une simulation (références de marché si aucun compte n'est relié).
+  Future<void> runSimulation(String campaignId) => _guard(() async {
+        await _dio.post(
+          '/campagnes/$campaignId/simulations-digitales',
+          options: Options(receiveTimeout: const Duration(seconds: 90)),
+        );
+      });
+
   /// Change le statut (DRAFT → PLANNED → IN_PROGRESS → COMPLETED, ou CANCELLED).
   Future<void> transition(String campaignId, CampaignStatus status) => _guard(() async {
         await _dio.post(

@@ -8,13 +8,29 @@ import '../../../core/theme/kiyanza_sizes.dart';
 import '../core/network/app_exceptions.dart';
 import '../core/providers/campagne_providers.dart';
 import '../data/models/campagnes/campagne_models.dart';
+import '../core/providers/campaign_detail_providers.dart';
+import '../core/providers/dashboard_providers.dart';
+import '../data/models/campagnes/campaign_creation_models.dart';
+import 'campagne.dart';
+import 'campagne_detail.dart';
 import 'campaign_step_dots.dart';
 
 class BudgetScreen extends ConsumerStatefulWidget {
   final CampaignType type;
   final String objective;
 
-  const BudgetScreen({super.key, required this.type, required this.objective});
+  /// Campagne digitale : code DigitalObjective et audience choisis aux
+  /// étapes précédentes, envoyés après la création.
+  final String? digitalObjective;
+  final AudienceSelection? audience;
+
+  const BudgetScreen({
+    super.key,
+    required this.type,
+    required this.objective,
+    this.digitalObjective,
+    this.audience,
+  });
   @override
   ConsumerState<BudgetScreen> createState() => _BudgetScreenState();
 }
@@ -56,32 +72,6 @@ void dispose() {
   final raw = _budgetController.text.replaceAll(RegExp(r'[^0-9]'), '');
   return int.tryParse(raw) ?? 100000;
 }
-
-  String get _estimatedReach {
-    final factor = _budgetValue / 100000;
-    final low = (25000 * factor).round();
-    final high = (40000 * factor).round();
-    return '${_formatNumber(low)} – ${_formatNumber(high)} personnes';
-  }
-
-  String get _estimatedProspects {
-    final factor = _budgetValue / 100000;
-    final low = (800 * factor).round();
-    final high = (1200 * factor).round();
-    return '${_formatNumber(low)} – ${_formatNumber(high)}';
-  }
-
-  String _formatNumber(int value) {
-    final str = value.toString();
-    final buffer = StringBuffer();
-
-    for (int i = 0; i < str.length; i++) {
-      if (i != 0 && (str.length - i) % 3 == 0) buffer.write(' ');
-      buffer.write(str[i]);
-    }
-
-    return buffer.toString();
-  }
 
   // ===========================================================
   // ACTIONS
@@ -446,82 +436,34 @@ child: Column(
   }
 
   // ===========================================================
-  // ESTIMATION RAPIDE
+  // APRÈS LA CRÉATION
   // ===========================================================
 
   Widget _buildEstimationCard() {
+    final digital = widget.type == CampaignType.digital;
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-
       decoration: BoxDecoration(
         color: const Color(0xFFF9FAFB),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: const Color(0xFF7EA6E7), width: 1.2),
       ),
-
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-
         children: [
-          const Row(
-            children: [
-              Icon(Icons.info_outline, size: 16, color: AppColors.black),
-
-              SizedBox(width: 8),
-
-              Text(
-                'Estimation rapide',
-
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 12),
-
-          _buildEstimationRow('Portée estimée', _estimatedReach),
-
-          const SizedBox(height: 8),
-
-          _buildEstimationRow('Prospects estimés', _estimatedProspects),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEstimationRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
-      children: [
-        Expanded(
-          child: Text(
-            label,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: AppColors.gray400),
-          ),
-        ),
-
-        const SizedBox(width: 8),
-
-        Flexible(
-          child: Text(
-            value,
-            textAlign: TextAlign.end,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 12.5,
-              fontWeight: FontWeight.w600,
-              color: AppColors.black,
+          const Icon(Icons.auto_awesome, size: 16, color: Color(0xFF2563EB)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              digital
+                  ? "À la création, Kiyanza simule la campagne avec ce budget : personnes touchées, clics, coût par résultat et scénarios, à partir des résultats observés sur le marché."
+                  : "La campagne est créée en brouillon : planifiez ensuite les emplacements et le suivi terrain depuis kiyanza.com.",
+              style: const TextStyle(fontSize: 12, color: AppColors.gray600, height: 1.45),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -571,6 +513,36 @@ Widget _buildContinueButton(BuildContext context) {
   );
 }
 
+/// Paramètres digitaux, canal Facebook et première simulation. La campagne
+/// existe déjà : un échec ici est signalé sans la perdre.
+Future<String?> _completeDigitalCampaign(
+  String campaignId,
+  String digitalObjective,
+  AudienceSelection audience,
+) async {
+  final detail = ref.read(campaignDetailRemoteDatasourceProvider);
+  try {
+    await detail.upsertDigitalDetails(
+      campaignId,
+      objective: digitalObjective,
+      ageMin: audience.ageMin,
+      ageMax: audience.ageMax,
+      gender: audience.gender,
+      locations: audience.locations,
+      interests: audience.interests,
+    );
+    await detail.selectChannels(campaignId, const ['FACEBOOK']);
+  } on AppException catch (e) {
+    return "Campagne créée, mais son audience n'a pas pu être enregistrée : ${e.message}";
+  }
+  try {
+    await detail.runSimulation(campaignId);
+  } on AppException {
+    return "Campagne créée. La simulation n'a pas abouti : relancez-la depuis kiyanza.com.";
+  }
+  return null;
+}
+
 Future<void> _handleCreate() async {
   final name = _nameController.text.trim();
   if (name.isEmpty) {
@@ -585,7 +557,7 @@ Future<void> _handleCreate() async {
 
   setState(() => _isSaving = true);
   try {
-    await ref.read(campagneRepositoryProvider).create(CreateCampagneRequest(
+    final campaign = await ref.read(campagneRepositoryProvider).create(CreateCampagneRequest(
           name: name,
           startDate: startDate,
           endDate: endDate,
@@ -593,19 +565,30 @@ Future<void> _handleCreate() async {
           objective: widget.objective,
           type: widget.type,
         ));
-    // Rafraîchit la liste pour qu'elle affiche la nouvelle campagne dès le
-    // retour dessus (étape 7 de ce guide — campagnesNotifierProvider).
     unawaited(ref.read(campagnesNotifierProvider.notifier).refresh());
-    if (mounted) {
-      // Dépile les 3 écrans du flux (Type → Objectif → Budget) d'un coup,
-      // pour revenir exactement là où "Nouvelle campagne" a été ouvert. Pas
-      // de route nommée dans ce flux, donc pas de raccourci plus propre que
-      // ces 3 pops explicites — le nombre est fixe car ce guide n'ouvre
-      // jamais ce flux autrement que Type → Objectif → Budget.
-      Navigator.of(context)
-        ..pop()
-        ..pop()
-        ..pop();
+    ref.invalidate(homeDataProvider);
+
+    String? warning;
+    final digitalObjective = widget.digitalObjective;
+    final audience = widget.audience;
+    if (widget.type == CampaignType.digital && digitalObjective != null && audience != null) {
+      warning = await _completeDigitalCampaign(campaign.id, digitalObjective, audience);
+    }
+
+    if (!mounted) return;
+    if (warning != null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(warning)));
+    }
+    // Referme tout le parcours (Type → … → Budget) et ouvre la campagne créée.
+    final navigator = Navigator.of(context);
+    navigator.popUntil((route) => route.settings.name == campaignTypeRouteName || route.isFirst);
+    final detail = MaterialPageRoute<void>(
+      builder: (_) => CampaignDetailScreen(campaign: CampaignItem.fromApi(campaign)),
+    );
+    if (navigator.canPop()) {
+      navigator.pushReplacement(detail);
+    } else {
+      navigator.push(detail);
     }
   } on AppException catch (e) {
     final message = e is ValidationFailedException && e.details.isNotEmpty

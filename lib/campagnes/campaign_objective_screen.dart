@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../data/models/campagnes/campaign_creation_models.dart';
 
 import '../../../core/theme/kiyanza_colors.dart';
 import '../../../core/theme/kiyanza_sizes.dart';
@@ -19,7 +20,16 @@ class CampaignObjectiveScreen extends StatefulWidget {
 class _CampaignObjectiveScreenState extends State<CampaignObjectiveScreen> {
   int _selectedIndex = 0; // 'Notoriété' sélectionné par défaut
 
-  final List<_ObjectiveOption> _objectives = [
+  /// Campagne digitale : les objectifs d'optimisation du backend (même liste
+  /// que l'assistant du site). Supports : objectifs libres.
+  late final List<_ObjectiveOption> _objectives = widget.type == CampaignType.digital
+      ? [
+          for (final option in digitalObjectiveOptions)
+            _ObjectiveOption(icon: option.icon, title: option.title, description: option.description),
+        ]
+      : _posterObjectives;
+
+  static final List<_ObjectiveOption> _posterObjectives = [
     _ObjectiveOption(
       icon: Icons.campaign_outlined,
       title: 'Notoriété',
@@ -273,6 +283,9 @@ class _CampaignObjectiveScreenState extends State<CampaignObjectiveScreen> {
                 builder: (_) => CampaignAudienceScreen(
                   type: widget.type,
                   objective: _objectives[_selectedIndex].title,
+                  digitalObjective: widget.type == CampaignType.digital
+                      ? digitalObjectiveOptions[_selectedIndex].code
+                      : null,
                 ),
               ),
             );
