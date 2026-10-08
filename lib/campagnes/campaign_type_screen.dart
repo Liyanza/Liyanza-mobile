@@ -14,7 +14,7 @@ class CampaignTypeScreen extends StatelessWidget {
     _CampaignTypeOption(
       icon: Icons.desktop_windows_outlined,
       title: 'Campagne Digitale',
-      description: 'Facebook, Instagram, Google Ads & Email',
+      description: 'Publicités Facebook simulées puis suivies (Instagram bientôt)',
       destinationBuilder: (context) =>
           const CampaignObjectiveScreen(type: CampaignType.digital),
     ),
