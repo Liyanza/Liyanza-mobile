@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/kiyanza_colors.dart';
 import '../core/network/app_exceptions.dart';
 import '../core/providers/assistant_ia_providers.dart';
+import '../core/providers/dashboard_providers.dart';
 import '../core/storage/local_conversation_store.dart';
 import '../data/models/assistant_ia/assistant_ia_models.dart';
 import 'conversation_history.dart';
@@ -291,10 +292,12 @@ class _KiyanzaAiScreenState extends ConsumerState<KiyanzaAiScreen> {
 
           const SizedBox(height: 16),
 
-          const Text(
-            'Bonjour, Aristide 👋',
+          Text(
+            ref.watch(meProvider).valueOrNull == null
+                ? 'Bonjour 👋'
+                : 'Bonjour, ${ref.watch(meProvider).valueOrNull!.displayName} 👋',
 
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w800,
               color: AppColors.black,
