@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'features/splash/presentation/splash_screen.dart';
-
 
 import 'features/splash/presentation/splash_screen.dart';
-
-//import 'features/home/home.dart';
 
 void main() {
   runApp(const ProviderScope(child: KiyanzaApp()));
@@ -25,4 +20,3 @@ class KiyanzaApp extends StatelessWidget {
     );
   }
 }
-//home: const HomeScreen(),

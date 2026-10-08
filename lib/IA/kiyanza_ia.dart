@@ -1,10 +1,8 @@
-// APRÈS
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../core/theme/kiyanza_colors.dart';
 import '../core/network/app_exceptions.dart';
 import '../core/providers/assistant_ia_providers.dart';
-import '../core/providers/auth_providers.dart';
 import '../core/storage/local_conversation_store.dart';
 import '../data/models/assistant_ia/assistant_ia_models.dart';
 import 'conversation_history.dart';
@@ -116,9 +114,11 @@ class _KiyanzaAiScreenState extends ConsumerState<KiyanzaAiScreen> {
             _buildHeader(context),
 
             Expanded(
-              child: _messages.isEmpty
-                  ? _buildWelcomeScreen()
-                  : _buildConversation(),
+              child: _isLoadingHistory
+                  ? const Center(child: CircularProgressIndicator())
+                  : _messages.isEmpty
+                      ? _buildWelcomeScreen()
+                      : _buildConversation(),
             ),
 
             _buildInputArea(),
