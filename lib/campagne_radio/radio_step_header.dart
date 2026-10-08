@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_colors.dart';
 
 // =================================================================
 // EN-TÊTE D'ÉTAPE (flow "Nouvelle campagne radio")

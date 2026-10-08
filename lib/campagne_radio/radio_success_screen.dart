@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_colors.dart';
 import '../monitoring_radio/monitoring_campagne.dart';
 
 class RadioSuccessScreen extends StatelessWidget {

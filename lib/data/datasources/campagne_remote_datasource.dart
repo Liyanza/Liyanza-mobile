@@ -17,6 +17,7 @@ class CampagneRemoteDatasource {
     int limit = 10,
     CampaignStatus? status,
     CampaignType? type,
+    String? search,
   }) async {
     try {
       final response = await _dio.get('/campagnes', queryParameters: {
@@ -24,6 +25,7 @@ class CampagneRemoteDatasource {
         'limit': limit,
         if (status != null) 'status': campaignStatusToJson(status),
         if (type != null) 'type': campaignTypeToJson(type),
+        if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
       });
       return CampagnesPage.fromJson(response.data as Map<String, dynamic>);
     } on DioException catch (e) {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_colors.dart';
 import 'radio_spot_screen.dart';
 import 'radio_step_header.dart';
 

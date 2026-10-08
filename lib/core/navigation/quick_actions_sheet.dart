@@ -3,8 +3,9 @@ import '../../data/models/campagnes/campaign_creation_models.dart';
 
 import '../theme/kiyanza_colors.dart';
 import '../../campagnes/campaign_type_screen.dart';
-import '../../simulation/scenario_details.dart';
-import '../../../monitoring_radio/monitoring.dart';
+import '../../IA/kiyanza_ia.dart';
+import '../../simulation/recommendation.dart';
+import '../../monitoring_radio/monitoring.dart';
 
 // =================================================================
 // BOTTOM SHEET — "Que souhaitez-vous faire ?"
@@ -16,7 +17,7 @@ Future<void> showQuickActionsSheet(BuildContext context) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    barrierColor: Colors.black.withOpacity(0.45),
+    barrierColor: Colors.black.withValues(alpha: 0.45),
     builder: (context) => const _QuickActionsSheet(),
   );
 }
@@ -104,14 +105,14 @@ class _QuickActionsSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   _QuickActionTile(
-                    icon: Icons.lightbulb_outline,
-                    title: 'Scénarios IA',
-                    subtitle: 'Comparer des stratégies',
+                    icon: Icons.auto_awesome_outlined,
+                    title: 'Assistant IA',
+                    subtitle: 'Poser une question sur vos campagnes',
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ScenarioDetailsScreen()),
+                        MaterialPageRoute(builder: (_) => const KiyanzaAiScreen()),
                       );
                     },
                   ),
@@ -130,11 +131,16 @@ class _QuickActionsSheet extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   _QuickActionTile(
-                    icon: Icons.menu_book_outlined,
-                    title: 'Rapports',
-                    subtitle: 'Générer un rapport',
-                    // TODO: brancher l'écran Rapports une fois disponible
-                    onTap: () => Navigator.pop(context),
+                    icon: Icons.lightbulb_outline,
+                    title: 'Recommandations IA',
+                    subtitle: 'Conseils pour vos campagnes',
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RecommendationsScreen()),
+                      );
+                    },
                   ),
                 ],
               ),

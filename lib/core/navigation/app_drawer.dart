@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/account_providers.dart';
+import '../../data/models/account/account_models.dart';
 
 import '../../core/theme/kiyanza_colors.dart';
-import '../../../monitoring_radio/monitoring.dart';
+import '../../monitoring_radio/monitoring.dart';
 import '../../features/notification/notification.dart';
 import '../../features/mon_profil/profil.dart';
 
@@ -96,21 +100,6 @@ class KiyanzaDrawer extends StatelessWidget {
                       onSelectTab(2);
                     },
                   ),
-                  _DrawerItem(
-                    icon: Icons.menu_book_outlined,
-                    label: 'Rapports',
-                    selected: false,
-                    // TODO: brancher l'écran Rapports une fois disponible
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  _DrawerItem(
-                    icon: Icons.calendar_today_outlined,
-                    label: 'Calendrier',
-                    selected: false,
-                    // TODO: brancher l'écran Calendrier une fois disponible
-                    onTap: () => Navigator.pop(context),
-                  ),
-
                   Padding(
                     padding: const EdgeInsets.fromLTRB(14, 16, 14, 8),
                     child: Text(
@@ -139,18 +128,16 @@ class KiyanzaDrawer extends StatelessWidget {
                     },
                   ),
                   _DrawerItem(
-                    icon: Icons.help_outline,
-                    label: 'Aide',
+                    icon: Icons.person_outline,
+                    label: 'Mon profil',
                     selected: false,
-                    // TODO: brancher l'écran Aide une fois disponible
-                    onTap: () => Navigator.pop(context),
-                  ),
-                  _DrawerItem(
-                    icon: Icons.settings_outlined,
-                    label: 'Paramètres',
-                    selected: false,
-                    // TODO: brancher l'écran Paramètres une fois disponible
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const ProfileScreen()),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -255,24 +242,36 @@ class KiyanzaDrawer extends StatelessWidget {
                 child: Icon(Icons.person, color: AppColors.gray400, size: 20),
               ),
               const SizedBox(width: 12),
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Aristide Nna',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFF101828),
-                      ),
-                    ),
-                    SizedBox(height: 2),
-                    Text(
-                      'Entreprise / Workspace',
-                      style: TextStyle(fontSize: 11, color: AppColors.gray400),
-                    ),
-                  ],
+              Expanded(
+                child: Consumer(
+                  builder: (context, ref, _) {
+                    final account = ref.watch(accountProvider).valueOrNull;
+                    final profile = account?.profile;
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile == null
+                              ? 'Mon profil'
+                              : (profile.fullName.isNotEmpty ? profile.fullName : profile.email),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: Color(0xFF101828),
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          account?.company?.name ?? (profile != null ? userRoleLabel(profile.role) : ''),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 11, color: AppColors.gray400),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               const Icon(

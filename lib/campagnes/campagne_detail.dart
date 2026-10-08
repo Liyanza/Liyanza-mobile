@@ -657,6 +657,16 @@ class _ResultsTab extends StatelessWidget {
         ));
       }
 
+      if (sim != null && sim.scenarios.length > 1) {
+        children.add(_Section(
+          title: 'Scénarios comparés',
+          subtitle: 'Même budget, trois stratégies',
+          child: Column(
+            children: [for (final scenario in sim.scenarios) _ScenarioTile(scenario: scenario)],
+          ),
+        ));
+      }
+
       if (actual == null && sim == null) {
         children.add(const _Section(
           title: 'Résultats',
@@ -688,6 +698,77 @@ class _ResultsTab extends StatelessWidget {
     }
 
     return ListView(padding: const EdgeInsets.fromLTRB(16, 16, 16, 24), children: children);
+  }
+}
+
+class _ScenarioTile extends StatelessWidget {
+  final ScenarioModel scenario;
+
+  const _ScenarioTile({required this.scenario});
+
+  @override
+  Widget build(BuildContext context) {
+    final recommended = scenario.isRecommended;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: recommended ? const Color(0xFFF0FDF4) : AppColors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: recommended ? AppColors.green : AppColors.gray100),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  scenarioStrategyLabel(scenario.strategy),
+                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+                ),
+              ),
+              if (recommended)
+                const Text('Recommandé',
+                    style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Color(0xFF16A34A))),
+              const SizedBox(width: 8),
+              Text('${scenario.score.round()}/100', style: const TextStyle(fontSize: 11, color: AppColors.gray500)),
+            ],
+          ),
+          if (scenarioStrategyDescription(scenario.strategy).isNotEmpty) ...[
+            const SizedBox(height: 2),
+            Text(scenarioStrategyDescription(scenario.strategy),
+                style: const TextStyle(fontSize: 11.5, color: AppColors.gray500)),
+          ],
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: _ScenarioFigure(label: 'Touchées', value: formatInt(scenario.reach))),
+              Expanded(child: _ScenarioFigure(label: 'Clics', value: formatInt(scenario.clicks))),
+              Expanded(child: _ScenarioFigure(label: 'Résultats', value: formatInt(scenario.conversions))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScenarioFigure extends StatelessWidget {
+  final String label;
+  final String value;
+
+  const _ScenarioFigure({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: const TextStyle(fontSize: 10.5, color: AppColors.gray400)),
+        Text(value, style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+      ],
+    );
   }
 }
 

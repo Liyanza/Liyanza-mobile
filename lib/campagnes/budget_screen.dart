@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
-import '../../../core/theme/kiyanza_sizes.dart';
+import '../core/theme/kiyanza_colors.dart';
+import '../core/theme/kiyanza_sizes.dart';
 import '../core/network/app_exceptions.dart';
 import '../core/providers/campagne_providers.dart';
 import '../data/models/campagnes/campagne_models.dart';

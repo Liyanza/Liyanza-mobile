@@ -5,9 +5,9 @@ import '../widget/bottom_navigation.dart';
 import '../../features/home/home.dart';
 import '../../campagnes/campagne.dart';
 import '../../simulation/recommendation.dart';
+import '../../features/search/search_screen.dart';
 import 'app_drawer.dart';
 import 'quick_actions_sheet.dart';
-import '../theme/kiyanza_colors.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -48,15 +48,12 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       // =========================================================
       // RECOMMANDATIONS (index 2)
       // =========================================================
-      const RecommendationsScreen(),
+      const RecommendationsScreen(showBack: false),
 
       // =========================================================
-      // RECHERCHE (index 3)
-      // Onglet référencé par KiyanzaBottomNavigation mais qui
-      // n'avait pas encore de page associée -> placeholder en
-      // attendant le véritable écran de recherche.
+      // RECHERCHE (index 3) : campagnes par nom.
       // =========================================================
-      const _SearchPlaceholder(),
+      const SearchScreen(),
     ];
 
     // NOTE : le Menu n'est plus un onglet de l'IndexedStack — sur
@@ -102,28 +99,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         currentIndex: _currentIndex,
         onItemSelected: _onItemSelected,
         onCenterButtonTap: () => showQuickActionsSheet(context),
-      ),
-    );
-  }
-}
-
-// =============================================================
-// PLACEHOLDER — Recherche
-// À remplacer par le véritable écran de recherche quand il
-// sera prêt (même emplacement dans _pages : index 3).
-// =============================================================
-class _SearchPlaceholder extends StatelessWidget {
-  const _SearchPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.white,
-      body: Center(
-        child: Text(
-          'Recherche — à venir',
-          style: TextStyle(color: AppColors.gray500),
-        ),
       ),
     );
   }

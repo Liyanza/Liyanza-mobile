@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import '../data/models/campagnes/campaign_creation_models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/providers/campagne_providers.dart';
+import '../core/providers/campagne_providers.dart';
 
-import '../../../core/theme/kiyanza_colors.dart';
-import '../../data/models/campagnes/campagne_models.dart';
-import '../../../core/theme/kiyanza_sizes.dart';
+import '../core/theme/kiyanza_colors.dart';
+import '../data/models/campagnes/campagne_models.dart';
+import '../core/theme/kiyanza_sizes.dart';
 import 'campagne_detail.dart';
 import 'campaign_type_screen.dart';
 
